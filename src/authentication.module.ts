@@ -1,4 +1,5 @@
 import { DynamicModule, Module, Provider, Type } from "@nestjs/common";
+import { ModuleRef } from "@nestjs/core";
 import { JwtModule } from "@nestjs/jwt";
 import { PassportModule } from "@nestjs/passport";
 import {
@@ -154,6 +155,32 @@ export class AuthenticationModule {
   }
 
   static forRootAsync(asyncOptions: AuthenticationAsyncOptions): DynamicModule {
+    const optionsProvider: Provider = {
+      provide: AUTHENTICATION_OPTIONS,
+      useFactory: asyncOptions.useFactory,
+      inject: asyncOptions.inject ?? [],
+    };
+
+    const repositoryProviders: Provider[] = [
+      {
+        provide: USER_REPOSITORY,
+        useFactory: async (options: AuthenticationModuleOptions, moduleRef: ModuleRef) =>
+          moduleRef.create(options.userRepository),
+        inject: [AUTHENTICATION_OPTIONS, ModuleRef],
+      },
+      {
+        provide: PASSWORD_RESET_REPOSITORY,
+        useFactory: async (options: AuthenticationModuleOptions, moduleRef: ModuleRef) =>
+          options.passwordResetRepository
+            ? moduleRef.create(options.passwordResetRepository)
+            : null,
+        inject: [AUTHENTICATION_OPTIONS, ModuleRef],
+      },
+    ];
+
+    // With async options, controllers/services are registered eagerly since
+    // the features array is not available at static definition time.
+    // The FeatureEnabledGuard on each controller gates access at runtime.
     return {
       module: AuthenticationModule,
       global: true,
@@ -184,25 +211,18 @@ export class AuthenticationModule {
         TwoFactorChallengeController,
       ],
       providers: [
-        {
-          provide: AUTHENTICATION_OPTIONS,
-          useFactory: asyncOptions.useFactory,
-          inject: asyncOptions.inject ?? [],
-        },
-        {
-          provide: USER_REPOSITORY,
-          useFactory: (options: AuthenticationModuleOptions) => {
-            return new options.userRepository();
-          },
-          inject: [AUTHENTICATION_OPTIONS],
-        },
+        optionsProvider,
+        ...repositoryProviders,
+        // Core services
         AuthService,
         EncryptionService,
         RecoveryCodeService,
         ConfirmPasswordService,
+        // Passport strategies
         LocalStrategy,
         JwtStrategy,
         JwtRefreshStrategy,
+        // Guards
         JwtAuthGuard,
         LoginThrottleGuard,
         TwoFactorThrottleGuard,
@@ -210,7 +230,9 @@ export class AuthenticationModule {
         FeatureEnabledGuard,
         PasswordConfirmedGuard,
         GuestGuard,
+        // Interceptors
         CanonicalizeUsernameInterceptor,
+        // Feature services (gated at runtime by FeatureEnabledGuard)
         RegistrationService,
         PasswordResetService,
         EmailVerificationService,

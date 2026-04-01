@@ -1,4 +1,5 @@
-import { describe, it, expect } from "vitest";
+import { describe, it, expect, vi } from "vitest";
+import { ModuleRef } from "@nestjs/core";
 import { AuthenticationModule } from "../src/authentication.module";
 import { Feature } from "../src/interfaces";
 import { AuthController } from "../src/controllers/auth.controller";
@@ -384,7 +385,7 @@ describe("AuthenticationModule", () => {
       expect(userRepoProvider.inject).toContain(AUTHENTICATION_OPTIONS);
     });
 
-    it("should create user repository instance from options", () => {
+    it("should create user repository instance via ModuleRef", async () => {
       const result = AuthenticationModule.forRootAsync({
         useFactory: () => baseOptions,
       });
@@ -393,8 +394,52 @@ describe("AuthenticationModule", () => {
       const userRepoProvider = providers.find(
         (p: any) => typeof p === "object" && p.provide === USER_REPOSITORY,
       );
-      const instance = userRepoProvider.useFactory(baseOptions);
+      expect(userRepoProvider.inject).toContain(ModuleRef);
+
+      const mockModuleRef = {
+        create: vi.fn().mockResolvedValue(new MockUserRepository()),
+      };
+      const instance = await userRepoProvider.useFactory(baseOptions, mockModuleRef);
       expect(instance).toBeInstanceOf(MockUserRepository);
+      expect(mockModuleRef.create).toHaveBeenCalledWith(MockUserRepository);
+    });
+
+    it("should provide PASSWORD_RESET_REPOSITORY via ModuleRef when configured", async () => {
+      const optsWithReset = {
+        ...baseOptions,
+        passwordResetRepository: MockPasswordResetRepository as any,
+      };
+      const result = AuthenticationModule.forRootAsync({
+        useFactory: () => optsWithReset,
+      });
+      const providers = result.providers as any[];
+
+      const resetRepoProvider = providers.find(
+        (p: any) => typeof p === "object" && p.provide === PASSWORD_RESET_REPOSITORY,
+      );
+      expect(resetRepoProvider).toBeDefined();
+
+      const mockModuleRef = {
+        create: vi.fn().mockResolvedValue(new MockPasswordResetRepository()),
+      };
+      const instance = await resetRepoProvider.useFactory(optsWithReset, mockModuleRef);
+      expect(instance).toBeInstanceOf(MockPasswordResetRepository);
+      expect(mockModuleRef.create).toHaveBeenCalledWith(MockPasswordResetRepository);
+    });
+
+    it("should return null for PASSWORD_RESET_REPOSITORY when not configured", async () => {
+      const result = AuthenticationModule.forRootAsync({
+        useFactory: () => baseOptions,
+      });
+      const providers = result.providers as any[];
+
+      const resetRepoProvider = providers.find(
+        (p: any) => typeof p === "object" && p.provide === PASSWORD_RESET_REPOSITORY,
+      );
+      const mockModuleRef = { create: vi.fn() };
+      const instance = await resetRepoProvider.useFactory(baseOptions, mockModuleRef);
+      expect(instance).toBeNull();
+      expect(mockModuleRef.create).not.toHaveBeenCalled();
     });
 
     it("should use empty inject array when inject is not provided", () => {
