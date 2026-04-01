@@ -34,7 +34,8 @@ export class ConfirmPasswordController {
   @Get("confirmed-password-status")
   @HttpCode(HttpStatus.OK)
   async status(@CurrentUser() user: AuthUser, @Query("seconds") seconds?: string) {
-    const timeout = seconds ? parseInt(seconds, 10) : undefined;
+    const parsed = seconds ? parseInt(seconds, 10) : undefined;
+    const timeout = parsed !== undefined && !isNaN(parsed) ? parsed : undefined;
     const confirmed = await this.confirmPasswordService.isRecentlyConfirmed(user, timeout);
     return { confirmed };
   }

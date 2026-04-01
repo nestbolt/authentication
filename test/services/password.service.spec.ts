@@ -38,9 +38,9 @@ describe("PasswordService", () => {
     it("should throw when updater is missing", async () => {
       service = new PasswordService(null as any, eventEmitter);
 
-      await expect(
-        service.update(mockUser, { password: "new-pass" }),
-      ).rejects.toThrow("Missing provider: UPDATES_USER_PASSWORDS");
+      await expect(service.update(mockUser, { password: "new-pass" })).rejects.toThrow(
+        "Missing provider: UPDATES_USER_PASSWORDS",
+      );
     });
 
     it("should call updater.update and emit event on success", async () => {

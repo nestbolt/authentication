@@ -95,9 +95,7 @@ describe("AuthService", () => {
 
   describe("generateTokens", () => {
     it("should generate access and refresh tokens with default expiration", async () => {
-      jwtService.sign
-        .mockReturnValueOnce("access-token")
-        .mockReturnValueOnce("refresh-token");
+      jwtService.sign.mockReturnValueOnce("access-token").mockReturnValueOnce("refresh-token");
 
       const result = await service.generateTokens(mockUser);
 
@@ -189,9 +187,7 @@ describe("AuthService", () => {
         purpose: "something-else",
       });
 
-      await expect(service.getChallengedUser("bad-token")).rejects.toThrow(
-        UnauthorizedException,
-      );
+      await expect(service.getChallengedUser("bad-token")).rejects.toThrow(UnauthorizedException);
     });
 
     it("should throw UnauthorizedException when user is not found", async () => {
@@ -202,9 +198,7 @@ describe("AuthService", () => {
       });
       userRepository.findById.mockResolvedValue(null);
 
-      await expect(service.getChallengedUser("token")).rejects.toThrow(
-        UnauthorizedException,
-      );
+      await expect(service.getChallengedUser("token")).rejects.toThrow(UnauthorizedException);
     });
 
     it("should throw UnauthorizedException when jwt verify throws", async () => {

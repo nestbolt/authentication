@@ -131,12 +131,12 @@ describe("ConfirmPasswordController", () => {
       expect(confirmPasswordService.isRecentlyConfirmed).toHaveBeenCalledWith(mockUser, 60);
     });
 
-    it("should handle NaN from non-numeric seconds string", async () => {
+    it("should pass undefined when seconds is non-numeric (NaN protection)", async () => {
       confirmPasswordService.isRecentlyConfirmed.mockResolvedValue(false);
 
       await controller.status(mockUser, "not-a-number");
 
-      expect(confirmPasswordService.isRecentlyConfirmed).toHaveBeenCalledWith(mockUser, NaN);
+      expect(confirmPasswordService.isRecentlyConfirmed).toHaveBeenCalledWith(mockUser, undefined);
     });
   });
 });

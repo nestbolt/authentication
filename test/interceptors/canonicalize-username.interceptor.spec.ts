@@ -4,7 +4,9 @@ import { AuthenticationModuleOptions } from "../../src/interfaces";
 import { of } from "rxjs";
 
 describe("CanonicalizeUsernameInterceptor", () => {
-  function createOptions(overrides: Partial<AuthenticationModuleOptions> = {}): AuthenticationModuleOptions {
+  function createOptions(
+    overrides: Partial<AuthenticationModuleOptions> = {},
+  ): AuthenticationModuleOptions {
     return {
       features: [],
       jwtSecret: "test",

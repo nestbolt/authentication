@@ -7,7 +7,9 @@ describe("LocalStrategy", () => {
   let strategy: LocalStrategy;
   let mockAuthService: { validateCredentials: ReturnType<typeof vi.fn> };
 
-  function createOptions(overrides: Partial<AuthenticationModuleOptions> = {}): AuthenticationModuleOptions {
+  function createOptions(
+    overrides: Partial<AuthenticationModuleOptions> = {},
+  ): AuthenticationModuleOptions {
     return {
       features: [],
       jwtSecret: "test",
@@ -36,13 +38,18 @@ describe("LocalStrategy", () => {
     const result = await strategy.validate("test@example.com", "password");
 
     expect(result).toEqual(mockUser);
-    expect(mockAuthService.validateCredentials).toHaveBeenCalledWith("test@example.com", "password");
+    expect(mockAuthService.validateCredentials).toHaveBeenCalledWith(
+      "test@example.com",
+      "password",
+    );
   });
 
   it("should throw UnauthorizedException when user is null", async () => {
     mockAuthService.validateCredentials.mockResolvedValue(null);
 
-    await expect(strategy.validate("test@example.com", "wrong")).rejects.toThrow(UnauthorizedException);
+    await expect(strategy.validate("test@example.com", "wrong")).rejects.toThrow(
+      UnauthorizedException,
+    );
     await expect(strategy.validate("test@example.com", "wrong")).rejects.toThrow(
       "These credentials do not match our records.",
     );
@@ -51,11 +58,16 @@ describe("LocalStrategy", () => {
   it("should throw UnauthorizedException when user is undefined", async () => {
     mockAuthService.validateCredentials.mockResolvedValue(undefined);
 
-    await expect(strategy.validate("test@example.com", "wrong")).rejects.toThrow(UnauthorizedException);
+    await expect(strategy.validate("test@example.com", "wrong")).rejects.toThrow(
+      UnauthorizedException,
+    );
   });
 
   it("should use custom usernameField from options", () => {
-    const customStrategy = new LocalStrategy(mockAuthService as any, createOptions({ usernameField: "username" }));
+    const customStrategy = new LocalStrategy(
+      mockAuthService as any,
+      createOptions({ usernameField: "username" }),
+    );
     expect(customStrategy).toBeDefined();
   });
 

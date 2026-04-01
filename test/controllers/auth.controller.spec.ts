@@ -101,7 +101,10 @@ describe("AuthController", () => {
       authService.validateCredentials.mockResolvedValue(null);
 
       await expect(controller.login(loginDto, request)).rejects.toThrow();
-      expect(authService.validateCredentials).toHaveBeenCalledWith("test@example.com", "password123");
+      expect(authService.validateCredentials).toHaveBeenCalledWith(
+        "test@example.com",
+        "password123",
+      );
     });
 
     it("should use custom usernameField when configured", async () => {
@@ -141,14 +144,20 @@ describe("AuthController", () => {
 
       await controller.login(loginDto, request);
 
-      expect(eventEmitter.emit).toHaveBeenCalledWith(AUTH_EVENTS.TWO_FACTOR_CHALLENGED, { user: mockUser });
+      expect(eventEmitter.emit).toHaveBeenCalledWith(AUTH_EVENTS.TWO_FACTOR_CHALLENGED, {
+        user: mockUser,
+      });
     });
 
     it("should use remember value from loginDto when creating 2FA challenge", async () => {
       options.features = [Feature.TWO_FACTOR_AUTHENTICATION];
       controller = new AuthController(authService, loginThrottleGuard, options, eventEmitter);
 
-      const dtoWithRemember = { email: "test@example.com", password: "password123", remember: true } as any;
+      const dtoWithRemember = {
+        email: "test@example.com",
+        password: "password123",
+        remember: true,
+      } as any;
       authService.validateCredentials.mockResolvedValue(mockUser);
       authService.userRequiresTwoFactor.mockReturnValue(true);
       authService.createTwoFactorChallenge.mockResolvedValue("challenge-token");

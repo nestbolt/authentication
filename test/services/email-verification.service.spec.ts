@@ -93,9 +93,9 @@ describe("EmailVerificationService", () => {
     it("should throw UnauthorizedException when id does not match", async () => {
       const { hash, signature, expires } = service.generateVerificationUrl(mockUser);
 
-      await expect(
-        service.verify(mockUser, "wrong-id", hash, signature, expires),
-      ).rejects.toThrow(UnauthorizedException);
+      await expect(service.verify(mockUser, "wrong-id", hash, signature, expires)).rejects.toThrow(
+        UnauthorizedException,
+      );
     });
 
     it("should throw UnprocessableEntityException when link has expired", async () => {
@@ -103,27 +103,27 @@ describe("EmailVerificationService", () => {
       const expiredTimestamp = String(Date.now() - 1000);
 
       // We need to compute a valid signature for expired timestamp
-      await expect(
-        service.verify(mockUser, id, hash, signature, expiredTimestamp),
-      ).rejects.toThrow(UnprocessableEntityException);
+      await expect(service.verify(mockUser, id, hash, signature, expiredTimestamp)).rejects.toThrow(
+        UnprocessableEntityException,
+      );
     });
 
     it("should throw UnprocessableEntityException when hash is invalid", async () => {
       const { id, signature, expires } = service.generateVerificationUrl(mockUser);
       const badHash = "a".repeat(64);
 
-      await expect(
-        service.verify(mockUser, id, badHash, signature, expires),
-      ).rejects.toThrow(UnprocessableEntityException);
+      await expect(service.verify(mockUser, id, badHash, signature, expires)).rejects.toThrow(
+        UnprocessableEntityException,
+      );
     });
 
     it("should throw UnprocessableEntityException when signature is invalid", async () => {
       const { id, hash, expires } = service.generateVerificationUrl(mockUser);
       const badSignature = "b".repeat(64);
 
-      await expect(
-        service.verify(mockUser, id, hash, badSignature, expires),
-      ).rejects.toThrow(UnprocessableEntityException);
+      await expect(service.verify(mockUser, id, hash, badSignature, expires)).rejects.toThrow(
+        UnprocessableEntityException,
+      );
     });
 
     it("should work without event emitter", async () => {

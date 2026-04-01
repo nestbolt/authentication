@@ -51,7 +51,9 @@ describe("PasswordController", () => {
     it("should propagate errors from passwordService", async () => {
       passwordService.update.mockRejectedValue(new Error("Password update failed"));
 
-      await expect(controller.update(mockUser, updateDto)).rejects.toThrow("Password update failed");
+      await expect(controller.update(mockUser, updateDto)).rejects.toThrow(
+        "Password update failed",
+      );
     });
   });
 });

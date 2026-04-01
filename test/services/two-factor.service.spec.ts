@@ -95,7 +95,9 @@ describe("TwoFactorService", () => {
       const user = { ...mockUser, twoFactorSecret: "existing-secret" };
       twoFactorProvider.generateSecretKey.mockReturnValue("new-secret");
       recoveryCodeService.generateCodes.mockReturnValue(["code1", "code2"]);
-      encryptionService.encrypt.mockReturnValueOnce("encrypted-secret").mockReturnValueOnce("encrypted-codes");
+      encryptionService.encrypt
+        .mockReturnValueOnce("encrypted-secret")
+        .mockReturnValueOnce("encrypted-codes");
       userRepository.save.mockResolvedValue(user);
 
       await service.enable(user, true);
@@ -113,9 +115,7 @@ describe("TwoFactorService", () => {
     it("should enable 2FA for user without existing secret", async () => {
       twoFactorProvider.generateSecretKey.mockReturnValue("new-secret");
       recoveryCodeService.generateCodes.mockReturnValue(["c1", "c2", "c3"]);
-      encryptionService.encrypt
-        .mockReturnValueOnce("enc-secret")
-        .mockReturnValueOnce("enc-codes");
+      encryptionService.encrypt.mockReturnValueOnce("enc-secret").mockReturnValueOnce("enc-codes");
       userRepository.save.mockResolvedValue(mockUser);
 
       await service.enable(mockUser);
@@ -124,12 +124,19 @@ describe("TwoFactorService", () => {
       expect(encryptionService.encrypt).toHaveBeenCalledWith("new-secret");
       expect(encryptionService.encrypt).toHaveBeenCalledWith(JSON.stringify(["c1", "c2", "c3"]));
       expect(userRepository.save).toHaveBeenCalled();
-      expect(eventEmitter.emit).toHaveBeenCalledWith(AUTH_EVENTS.TWO_FACTOR_ENABLED, { user: mockUser });
+      expect(eventEmitter.emit).toHaveBeenCalledWith(AUTH_EVENTS.TWO_FACTOR_ENABLED, {
+        user: mockUser,
+      });
     });
 
     it("should work without event emitter", async () => {
       service = new TwoFactorService(
-        userRepository, options, twoFactorProvider, encryptionService, recoveryCodeService, undefined,
+        userRepository,
+        options,
+        twoFactorProvider,
+        encryptionService,
+        recoveryCodeService,
+        undefined,
       );
       twoFactorProvider.generateSecretKey.mockReturnValue("secret");
       recoveryCodeService.generateCodes.mockReturnValue([]);
@@ -183,7 +190,12 @@ describe("TwoFactorService", () => {
 
     it("should work without event emitter", async () => {
       service = new TwoFactorService(
-        userRepository, options, twoFactorProvider, encryptionService, recoveryCodeService, undefined,
+        userRepository,
+        options,
+        twoFactorProvider,
+        encryptionService,
+        recoveryCodeService,
+        undefined,
       );
       const user = { ...mockUser, twoFactorSecret: "secret" };
       userRepository.save.mockResolvedValue(user);
@@ -202,9 +214,7 @@ describe("TwoFactorService", () => {
     it("should throw when code is empty", async () => {
       const user = { ...mockUser, twoFactorSecret: "encrypted-secret" };
 
-      await expect(service.confirmSetup(user, "")).rejects.toThrow(
-        UnprocessableEntityException,
-      );
+      await expect(service.confirmSetup(user, "")).rejects.toThrow(UnprocessableEntityException);
     });
 
     it("should throw when code is invalid", async () => {
@@ -236,7 +246,12 @@ describe("TwoFactorService", () => {
 
     it("should work without event emitter", async () => {
       service = new TwoFactorService(
-        userRepository, options, twoFactorProvider, encryptionService, recoveryCodeService, undefined,
+        userRepository,
+        options,
+        twoFactorProvider,
+        encryptionService,
+        recoveryCodeService,
+        undefined,
       );
       const user = { ...mockUser, twoFactorSecret: "enc" };
       encryptionService.decrypt.mockReturnValue("secret");
@@ -366,7 +381,12 @@ describe("TwoFactorService", () => {
     it("should use custom appName from options", async () => {
       options.appName = "MyApp";
       service = new TwoFactorService(
-        userRepository, options, twoFactorProvider, encryptionService, recoveryCodeService, eventEmitter,
+        userRepository,
+        options,
+        twoFactorProvider,
+        encryptionService,
+        recoveryCodeService,
+        eventEmitter,
       );
       const user = { ...mockUser, twoFactorSecret: "encrypted-secret" };
       encryptionService.decrypt.mockReturnValue("secret");
@@ -375,7 +395,11 @@ describe("TwoFactorService", () => {
 
       await service.getQrCode(user);
 
-      expect(twoFactorProvider.getQrCodeUrl).toHaveBeenCalledWith("MyApp", "test@example.com", "secret");
+      expect(twoFactorProvider.getQrCodeUrl).toHaveBeenCalledWith(
+        "MyApp",
+        "test@example.com",
+        "secret",
+      );
     });
   });
 
@@ -485,7 +509,12 @@ describe("TwoFactorService", () => {
 
     it("should work without event emitter", async () => {
       service = new TwoFactorService(
-        userRepository, options, twoFactorProvider, encryptionService, recoveryCodeService, undefined,
+        userRepository,
+        options,
+        twoFactorProvider,
+        encryptionService,
+        recoveryCodeService,
+        undefined,
       );
       recoveryCodeService.generateCodes.mockReturnValue([]);
       encryptionService.encrypt.mockReturnValue("enc");

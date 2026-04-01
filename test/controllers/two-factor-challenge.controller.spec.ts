@@ -222,7 +222,10 @@ describe("TwoFactorChallengeController", () => {
       const dto = { challengeToken: "challenge-token", recoveryCode: "my-recovery-code" };
       await controller.challenge(dto, mockRequest);
 
-      expect(twoFactorService.validateRecoveryCode).toHaveBeenCalledWith(mockUser, "my-recovery-code");
+      expect(twoFactorService.validateRecoveryCode).toHaveBeenCalledWith(
+        mockUser,
+        "my-recovery-code",
+      );
     });
   });
 
@@ -308,7 +311,10 @@ describe("TwoFactorChallengeController", () => {
       };
       await controller.challenge(dto, mockRequest);
 
-      expect(twoFactorService.validateRecoveryCode).toHaveBeenCalledWith(mockUser, "recovery-code-1");
+      expect(twoFactorService.validateRecoveryCode).toHaveBeenCalledWith(
+        mockUser,
+        "recovery-code-1",
+      );
       expect(twoFactorService.validateCode).not.toHaveBeenCalled();
     });
   });

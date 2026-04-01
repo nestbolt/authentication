@@ -144,9 +144,7 @@ export class AuthenticationModule {
         ...(options.features.includes(Feature.EMAIL_VERIFICATION)
           ? [EmailVerificationService]
           : []),
-        ...(options.features.includes(Feature.UPDATE_PROFILE_INFORMATION)
-          ? [ProfileService]
-          : []),
+        ...(options.features.includes(Feature.UPDATE_PROFILE_INFORMATION) ? [ProfileService] : []),
         ...(options.features.includes(Feature.UPDATE_PASSWORDS) ? [PasswordService] : []),
         ...(options.features.includes(Feature.TWO_FACTOR_AUTHENTICATION)
           ? [TwoFactorService, TwoFactorProviderService]

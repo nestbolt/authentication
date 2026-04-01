@@ -1,4 +1,4 @@
-import { describe, it, expect, beforeEach, vi } from "vitest";
+import { describe, it, expect } from "vitest";
 import { ForbiddenException } from "@nestjs/common";
 import { PasswordConfirmedGuard } from "../../src/guards/password-confirmed.guard";
 import { AuthenticationModuleOptions } from "../../src/interfaces";
@@ -12,7 +12,9 @@ describe("PasswordConfirmedGuard", () => {
     } as any;
   }
 
-  function createOptions(overrides: Partial<AuthenticationModuleOptions> = {}): AuthenticationModuleOptions {
+  function createOptions(
+    overrides: Partial<AuthenticationModuleOptions> = {},
+  ): AuthenticationModuleOptions {
     return {
       features: [],
       jwtSecret: "test",
@@ -38,14 +40,18 @@ describe("PasswordConfirmedGuard", () => {
   });
 
   it("should allow access when confirmPassword is false", () => {
-    const guard = new PasswordConfirmedGuard(createOptions({ twoFactorOptions: { confirmPassword: false } }));
+    const guard = new PasswordConfirmedGuard(
+      createOptions({ twoFactorOptions: { confirmPassword: false } }),
+    );
     const context = createMockContext({ passwordConfirmedAt: new Date().toISOString() });
 
     expect(guard.canActivate(context)).toBe(true);
   });
 
   it("should throw ForbiddenException when confirmPassword is true and user has no passwordConfirmedAt", () => {
-    const guard = new PasswordConfirmedGuard(createOptions({ twoFactorOptions: { confirmPassword: true } }));
+    const guard = new PasswordConfirmedGuard(
+      createOptions({ twoFactorOptions: { confirmPassword: true } }),
+    );
     const context = createMockContext({ passwordConfirmedAt: null });
 
     expect(() => guard.canActivate(context)).toThrow(ForbiddenException);
@@ -53,7 +59,9 @@ describe("PasswordConfirmedGuard", () => {
   });
 
   it("should throw ForbiddenException when confirmPassword is true and user is undefined", () => {
-    const guard = new PasswordConfirmedGuard(createOptions({ twoFactorOptions: { confirmPassword: true } }));
+    const guard = new PasswordConfirmedGuard(
+      createOptions({ twoFactorOptions: { confirmPassword: true } }),
+    );
     const context = createMockContext(undefined);
 
     expect(() => guard.canActivate(context)).toThrow(ForbiddenException);
@@ -61,7 +69,9 @@ describe("PasswordConfirmedGuard", () => {
   });
 
   it("should throw ForbiddenException when confirmPassword is true and user is null", () => {
-    const guard = new PasswordConfirmedGuard(createOptions({ twoFactorOptions: { confirmPassword: true } }));
+    const guard = new PasswordConfirmedGuard(
+      createOptions({ twoFactorOptions: { confirmPassword: true } }),
+    );
     const context = createMockContext(null);
 
     expect(() => guard.canActivate(context)).toThrow(ForbiddenException);
@@ -69,7 +79,9 @@ describe("PasswordConfirmedGuard", () => {
   });
 
   it("should throw ForbiddenException when password confirmation has expired (default 900s timeout)", () => {
-    const guard = new PasswordConfirmedGuard(createOptions({ twoFactorOptions: { confirmPassword: true } }));
+    const guard = new PasswordConfirmedGuard(
+      createOptions({ twoFactorOptions: { confirmPassword: true } }),
+    );
     // Set confirmedAt to 901 seconds ago
     const confirmedAt = new Date(Date.now() - 901 * 1000).toISOString();
     const context = createMockContext({ passwordConfirmedAt: confirmedAt });
@@ -79,7 +91,9 @@ describe("PasswordConfirmedGuard", () => {
   });
 
   it("should allow access when password was confirmed within the default timeout", () => {
-    const guard = new PasswordConfirmedGuard(createOptions({ twoFactorOptions: { confirmPassword: true } }));
+    const guard = new PasswordConfirmedGuard(
+      createOptions({ twoFactorOptions: { confirmPassword: true } }),
+    );
     // Set confirmedAt to 10 seconds ago
     const confirmedAt = new Date(Date.now() - 10 * 1000).toISOString();
     const context = createMockContext({ passwordConfirmedAt: confirmedAt });
@@ -131,7 +145,9 @@ describe("PasswordConfirmedGuard", () => {
   });
 
   it("should handle user with passwordConfirmedAt as a Date object", () => {
-    const guard = new PasswordConfirmedGuard(createOptions({ twoFactorOptions: { confirmPassword: true } }));
+    const guard = new PasswordConfirmedGuard(
+      createOptions({ twoFactorOptions: { confirmPassword: true } }),
+    );
     const confirmedAt = new Date(Date.now() - 10 * 1000);
     const context = createMockContext({ passwordConfirmedAt: confirmedAt });
 

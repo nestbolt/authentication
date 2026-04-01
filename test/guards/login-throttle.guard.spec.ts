@@ -76,7 +76,7 @@ describe("LoginThrottleGuard", () => {
 
   it("should track different users separately", () => {
     const request1 = createMockRequest("user1@test.com");
-    const request2 = createMockRequest("user2@test.com");
+    createMockRequest("user2@test.com");
 
     for (let i = 0; i < 3; i++) {
       guard.increment(request1);

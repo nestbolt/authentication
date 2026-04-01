@@ -58,7 +58,7 @@ export class PasswordResetService {
 
   async reset(data: { email: string; token: string; password: string }): Promise<void> {
     this.ensureDependencies();
-    const record = await this.resetRepository!.findByEmail(data.email);
+    const record = await this.resetRepository.findByEmail(data.email);
     if (!record) {
       throw new UnprocessableEntityException("Invalid password reset token.");
     }

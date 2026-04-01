@@ -8,7 +8,12 @@ import {
 import { createHmac, timingSafeEqual } from "crypto";
 import { AUTHENTICATION_OPTIONS, USER_REPOSITORY } from "../authentication.constants";
 import { AUTH_EVENTS } from "../events";
-import { AuthenticationModuleOptions, AuthUser, EventEmitterLike, UserRepository } from "../interfaces";
+import {
+  AuthenticationModuleOptions,
+  AuthUser,
+  EventEmitterLike,
+  UserRepository,
+} from "../interfaces";
 
 @Injectable()
 export class EmailVerificationService {

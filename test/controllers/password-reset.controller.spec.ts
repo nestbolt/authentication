@@ -34,7 +34,9 @@ describe("PasswordResetController", () => {
     it("should propagate errors from passwordResetService", async () => {
       passwordResetService.sendResetLink.mockRejectedValue(new Error("Service error"));
 
-      await expect(controller.forgotPassword({ email: "test@example.com" })).rejects.toThrow("Service error");
+      await expect(controller.forgotPassword({ email: "test@example.com" })).rejects.toThrow(
+        "Service error",
+      );
     });
   });
 

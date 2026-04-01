@@ -1,13 +1,15 @@
 import { describe, it, expect, beforeEach, vi } from "vitest";
 import { UnauthorizedException } from "@nestjs/common";
 import { JwtStrategy } from "../../src/strategies/jwt.strategy";
-import { AuthenticationModuleOptions, UserRepository } from "../../src/interfaces";
+import { AuthenticationModuleOptions } from "../../src/interfaces";
 
 describe("JwtStrategy", () => {
   let strategy: JwtStrategy;
   let mockUserRepository: { findById: ReturnType<typeof vi.fn> };
 
-  function createOptions(overrides: Partial<AuthenticationModuleOptions> = {}): AuthenticationModuleOptions {
+  function createOptions(
+    overrides: Partial<AuthenticationModuleOptions> = {},
+  ): AuthenticationModuleOptions {
     return {
       features: [],
       jwtSecret: "test-jwt-secret",
@@ -42,18 +44,18 @@ describe("JwtStrategy", () => {
   it("should throw UnauthorizedException when user is not found", async () => {
     mockUserRepository.findById.mockResolvedValue(null);
 
-    await expect(strategy.validate({ sub: "nonexistent", email: "test@example.com" })).rejects.toThrow(
-      UnauthorizedException,
-    );
+    await expect(
+      strategy.validate({ sub: "nonexistent", email: "test@example.com" }),
+    ).rejects.toThrow(UnauthorizedException);
     expect(mockUserRepository.findById).toHaveBeenCalledWith("nonexistent");
   });
 
   it("should throw UnauthorizedException when user is undefined", async () => {
     mockUserRepository.findById.mockResolvedValue(undefined);
 
-    await expect(strategy.validate({ sub: "nonexistent", email: "test@example.com" })).rejects.toThrow(
-      UnauthorizedException,
-    );
+    await expect(
+      strategy.validate({ sub: "nonexistent", email: "test@example.com" }),
+    ).rejects.toThrow(UnauthorizedException);
   });
 
   it("should call findById with the sub from the payload", async () => {

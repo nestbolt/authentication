@@ -52,7 +52,7 @@ pnpm add @nestjs/passport @nestjs/jwt passport passport-jwt passport-local class
 
 Optional:
 ```bash
-pnpm add @nestjs/event-emitter @nestjs/throttler
+pnpm add @nestjs/event-emitter
 ```
 
 ## Quick Start

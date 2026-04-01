@@ -115,7 +115,9 @@ describe("TwoFactorController", () => {
     it("should propagate errors from twoFactorService.confirmSetup", async () => {
       twoFactorService.confirmSetup.mockRejectedValue(new Error("Invalid code"));
 
-      await expect(controller.confirm(mockUser, { code: "000000" })).rejects.toThrow("Invalid code");
+      await expect(controller.confirm(mockUser, { code: "000000" })).rejects.toThrow(
+        "Invalid code",
+      );
     });
   });
 

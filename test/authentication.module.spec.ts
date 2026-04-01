@@ -21,7 +21,11 @@ import { ProfileService } from "../src/services/profile.service";
 import { PasswordService } from "../src/services/password.service";
 import { TwoFactorService } from "../src/services/two-factor.service";
 import { TwoFactorProviderService } from "../src/services/two-factor-provider.service";
-import { AUTHENTICATION_OPTIONS, PASSWORD_RESET_REPOSITORY, USER_REPOSITORY } from "../src/authentication.constants";
+import {
+  AUTHENTICATION_OPTIONS,
+  PASSWORD_RESET_REPOSITORY,
+  USER_REPOSITORY,
+} from "../src/authentication.constants";
 
 class MockUserRepository {
   findById() {}
@@ -132,7 +136,9 @@ describe("AuthenticationModule", () => {
       const result = AuthenticationModule.forRoot(baseOptions);
       const providers = result.providers as any[];
 
-      const providerValues = providers.map((p: any) => (typeof p === "function" ? p : p.provide ?? p));
+      const providerValues = providers.map((p: any) =>
+        typeof p === "function" ? p : (p.provide ?? p),
+      );
       expect(providerValues).toContain(AuthService);
       expect(providerValues).toContain(EncryptionService);
       expect(providerValues).toContain(RecoveryCodeService);
@@ -423,15 +429,11 @@ describe("AuthenticationModule", () => {
       });
 
       // Find the JwtModule async config in imports
-      const jwtModuleConfig = result.imports!.find(
-        (imp: any) => imp?.module?.name === "JwtModule",
-      );
+      const jwtModuleConfig = result.imports!.find((imp: any) => imp?.module?.name === "JwtModule");
       expect(jwtModuleConfig).toBeDefined();
 
       if (jwtModuleConfig?.providers) {
-        const factory = jwtModuleConfig.providers.find(
-          (p: any) => p.useFactory,
-        );
+        const factory = jwtModuleConfig.providers.find((p: any) => p.useFactory);
         if (factory) {
           const jwtOpts = await factory.useFactory();
           expect(jwtOpts.secret).toBe("jwt-secret");

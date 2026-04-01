@@ -85,7 +85,9 @@ describe("TwoFactorProviderService", () => {
 
   describe("getQrCodeUrl", () => {
     it("should return the otpauth URL", () => {
-      (authenticator.keyuri as any).mockReturnValue("otpauth://totp/MyApp:user@test.com?secret=ABC");
+      (authenticator.keyuri as any).mockReturnValue(
+        "otpauth://totp/MyApp:user@test.com?secret=ABC",
+      );
 
       const result = service.getQrCodeUrl("MyApp", "user@test.com", "ABC");
 

@@ -80,7 +80,13 @@ describe("PasswordResetService", () => {
 
   describe("ensureDependencies (via sendResetLink)", () => {
     it("should throw when resetRepository is missing", async () => {
-      service = new PasswordResetService(userRepository, null as any, resetter, options, eventEmitter);
+      service = new PasswordResetService(
+        userRepository,
+        null as any,
+        resetter,
+        options,
+        eventEmitter,
+      );
 
       await expect(service.sendResetLink("test@example.com")).rejects.toThrow(
         "Missing provider: PASSWORD_RESET_REPOSITORY",
@@ -88,7 +94,13 @@ describe("PasswordResetService", () => {
     });
 
     it("should throw when resetter is missing", async () => {
-      service = new PasswordResetService(userRepository, resetRepository, null as any, options, eventEmitter);
+      service = new PasswordResetService(
+        userRepository,
+        resetRepository,
+        null as any,
+        options,
+        eventEmitter,
+      );
 
       await expect(service.sendResetLink("test@example.com")).rejects.toThrow(
         "Missing provider: RESETS_USER_PASSWORDS",
@@ -129,7 +141,13 @@ describe("PasswordResetService", () => {
 
     it("should use custom usernameField from options", async () => {
       options.usernameField = "username";
-      service = new PasswordResetService(userRepository, resetRepository, resetter, options, eventEmitter);
+      service = new PasswordResetService(
+        userRepository,
+        resetRepository,
+        resetter,
+        options,
+        eventEmitter,
+      );
       userRepository.findByField.mockResolvedValue(mockUser);
       (bcrypt.hash as any).mockResolvedValue("hashed-token");
 
@@ -141,7 +159,13 @@ describe("PasswordResetService", () => {
 
   describe("reset", () => {
     it("should throw when ensureDependencies fails (no resetRepository)", async () => {
-      service = new PasswordResetService(userRepository, null as any, resetter, options, eventEmitter);
+      service = new PasswordResetService(
+        userRepository,
+        null as any,
+        resetter,
+        options,
+        eventEmitter,
+      );
 
       await expect(
         service.reset({ email: "test@example.com", token: "token", password: "new-pass" }),
@@ -149,7 +173,13 @@ describe("PasswordResetService", () => {
     });
 
     it("should throw when ensureDependencies fails (no resetter)", async () => {
-      service = new PasswordResetService(userRepository, resetRepository, null as any, options, eventEmitter);
+      service = new PasswordResetService(
+        userRepository,
+        resetRepository,
+        null as any,
+        options,
+        eventEmitter,
+      );
 
       await expect(
         service.reset({ email: "test@example.com", token: "token", password: "new-pass" }),
@@ -224,7 +254,13 @@ describe("PasswordResetService", () => {
     });
 
     it("should work without event emitter", async () => {
-      service = new PasswordResetService(userRepository, resetRepository, resetter, options, undefined);
+      service = new PasswordResetService(
+        userRepository,
+        resetRepository,
+        resetter,
+        options,
+        undefined,
+      );
       resetRepository.findByEmail.mockResolvedValue({
         token: "hashed-token",
         createdAt: new Date(),
@@ -241,7 +277,13 @@ describe("PasswordResetService", () => {
 
     it("should use custom usernameField for user lookup in reset", async () => {
       options.usernameField = "username";
-      service = new PasswordResetService(userRepository, resetRepository, resetter, options, eventEmitter);
+      service = new PasswordResetService(
+        userRepository,
+        resetRepository,
+        resetter,
+        options,
+        eventEmitter,
+      );
       resetRepository.findByEmail.mockResolvedValue({
         token: "hashed-token",
         createdAt: new Date(),

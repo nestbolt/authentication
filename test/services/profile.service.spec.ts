@@ -51,9 +51,7 @@ describe("ProfileService", () => {
     it("should propagate errors from updater", async () => {
       updater.update.mockRejectedValue(new Error("Update failed"));
 
-      await expect(service.update(mockUser, { name: "New Name" })).rejects.toThrow(
-        "Update failed",
-      );
+      await expect(service.update(mockUser, { name: "New Name" })).rejects.toThrow("Update failed");
     });
   });
 });

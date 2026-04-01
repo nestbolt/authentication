@@ -1,13 +1,15 @@
 import { describe, it, expect, beforeEach, vi } from "vitest";
 import { UnauthorizedException } from "@nestjs/common";
 import { JwtRefreshStrategy } from "../../src/strategies/jwt-refresh.strategy";
-import { AuthenticationModuleOptions, UserRepository } from "../../src/interfaces";
+import { AuthenticationModuleOptions } from "../../src/interfaces";
 
 describe("JwtRefreshStrategy", () => {
   let strategy: JwtRefreshStrategy;
   let mockUserRepository: { findById: ReturnType<typeof vi.fn> };
 
-  function createOptions(overrides: Partial<AuthenticationModuleOptions> = {}): AuthenticationModuleOptions {
+  function createOptions(
+    overrides: Partial<AuthenticationModuleOptions> = {},
+  ): AuthenticationModuleOptions {
     return {
       features: [],
       jwtSecret: "test-jwt-secret",

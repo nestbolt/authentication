@@ -45,9 +45,7 @@ describe("EncryptionService", () => {
 
   it("should throw on invalid key length", async () => {
     const shortKey = randomBytes(16).toString("base64");
-    await expect(createService(shortKey)).rejects.toThrow(
-      "Encryption key must be 32 bytes",
-    );
+    await expect(createService(shortKey)).rejects.toThrow("Encryption key must be 32 bytes");
   });
 
   it("should handle empty string encryption", () => {
@@ -64,21 +62,15 @@ describe("EncryptionService", () => {
   });
 
   it("should throw on invalid encrypted data format (wrong number of parts)", () => {
-    expect(() => service.decrypt("onlyonepart")).toThrow(
-      "Invalid encrypted data format.",
-    );
+    expect(() => service.decrypt("onlyonepart")).toThrow("Invalid encrypted data format.");
   });
 
   it("should throw on invalid encrypted data format (two parts)", () => {
-    expect(() => service.decrypt("part1:part2")).toThrow(
-      "Invalid encrypted data format.",
-    );
+    expect(() => service.decrypt("part1:part2")).toThrow("Invalid encrypted data format.");
   });
 
   it("should throw on invalid encrypted data format (four parts)", () => {
-    expect(() => service.decrypt("a:b:c:d")).toThrow(
-      "Invalid encrypted data format.",
-    );
+    expect(() => service.decrypt("a:b:c:d")).toThrow("Invalid encrypted data format.");
   });
 
   it("should throw 'Failed to decrypt data' when decryption fails with corrupted data", () => {
@@ -100,24 +92,19 @@ describe("EncryptionService", () => {
     expect(() => service.decrypt(parts.join(":"))).toThrow("Failed to decrypt data.");
   });
 
-  it("should re-throw 'Invalid encrypted data format.' if it somehow occurs inside try block", () => {
-    // This covers the defensive re-throw on line 43 by spying on Buffer.from
-    // to throw the specific error message inside the try block
+  it("should throw 'Failed to decrypt data' for any error inside try block", () => {
     const originalFrom = Buffer.from;
     let callCount = 0;
     const spy = vi.spyOn(Buffer, "from").mockImplementation((...args: any[]) => {
       callCount++;
-      // The split on line 28 produces the 3-part check on line 29 which passes,
-      // then Buffer.from is called inside the try block (line 34)
-      // We let the format check pass, then throw on first Buffer.from inside try
       if (callCount > 0 && args[1] === "base64") {
-        throw new Error("Invalid encrypted data format.");
+        throw new Error("Unexpected internal error");
       }
       return originalFrom.call(Buffer, ...args) as any;
     });
 
     try {
-      expect(() => service.decrypt("aaa:bbb:ccc")).toThrow("Invalid encrypted data format.");
+      expect(() => service.decrypt("aaa:bbb:ccc")).toThrow("Failed to decrypt data.");
     } finally {
       spy.mockRestore();
     }

@@ -74,6 +74,18 @@ describe("EmailVerificationController", () => {
       ).rejects.toThrow("Missing signature or expires parameter.");
     });
 
+    it("should throw BadRequestException when user is missing", async () => {
+      await expect(
+        controller.verify("user-1", "hash123", "sig456", "1234567890", undefined),
+      ).rejects.toThrow(BadRequestException);
+    });
+
+    it("should throw correct message when user is missing", async () => {
+      await expect(
+        controller.verify("user-1", "hash123", "sig456", "1234567890", undefined),
+      ).rejects.toThrow("User not found.");
+    });
+
     it("should propagate errors from emailVerificationService", async () => {
       emailVerificationService.verify.mockRejectedValue(new Error("Verification failed"));
 

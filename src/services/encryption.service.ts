@@ -38,10 +38,7 @@ export class EncryptionService {
       let decrypted = decipher.update(ciphertext, "base64", "utf8");
       decrypted += decipher.final("utf8");
       return decrypted;
-    } catch (error) {
-      if (error instanceof Error && error.message === "Invalid encrypted data format.") {
-        throw error;
-      }
+    } catch {
       throw new Error("Failed to decrypt data.");
     }
   }

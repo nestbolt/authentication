@@ -34,7 +34,10 @@ export class EmailVerificationController {
     if (!signature || !expires) {
       throw new BadRequestException("Missing signature or expires parameter.");
     }
-    await this.emailVerificationService.verify(user!, id, hash, signature, expires);
+    if (!user) {
+      throw new BadRequestException("User not found.");
+    }
+    await this.emailVerificationService.verify(user, id, hash, signature, expires);
     return { message: "Email verified successfully." };
   }
 
