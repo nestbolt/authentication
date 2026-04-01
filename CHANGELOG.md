@@ -2,6 +2,14 @@
 
 All notable changes to `@nestbolt/authentication` will be documented in this file.
 
+## 0.1.1
+
+### Bug Fixes
+
+- **forRootAsync DI bypass** — `forRootAsync` was using `new options.userRepository()` which bypassed NestJS dependency injection, leaving repository dependencies (e.g. `DataSource`) undefined. Now uses `ModuleRef.create()` to properly instantiate repositories through the DI container.
+- **forRootAsync missing PASSWORD_RESET_REPOSITORY** — The conditional `PASSWORD_RESET_REPOSITORY` registration present in `forRoot` was absent from `forRootAsync`. Now registers it via `ModuleRef.create()` when configured, or `null` when not (compatible with `@Optional()` injection).
+- **TwoFactorController.enable() crash on empty body** — Calling `POST /user/two-factor-authentication` without a request body caused a `TypeError` because `@Body()` returned `undefined`. Now handles optional body with safe navigation (`body?.force ?? false`).
+
 ## 0.1.0
 
 ### Features
