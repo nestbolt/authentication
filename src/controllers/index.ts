@@ -1,0 +1,9 @@
+export { AuthController } from "./auth.controller";
+export { RegistrationController } from "./registration.controller";
+export { PasswordResetController } from "./password-reset.controller";
+export { EmailVerificationController } from "./email-verification.controller";
+export { ProfileController } from "./profile.controller";
+export { PasswordController } from "./password.controller";
+export { ConfirmPasswordController } from "./confirm-password.controller";
+export { TwoFactorController } from "./two-factor.controller";
+export { TwoFactorChallengeController } from "./two-factor-challenge.controller";

@@ -1,0 +1,45 @@
+import {
+  Controller,
+  Get,
+  Post,
+  Param,
+  Query,
+  HttpCode,
+  HttpStatus,
+  UseGuards,
+} from "@nestjs/common";
+import { RequiresFeature } from "../decorators";
+import { Feature, AuthUser } from "../interfaces";
+import { JwtAuthGuard } from "../guards/jwt-auth.guard";
+import { EmailVerificationService } from "../services/email-verification.service";
+import { CurrentUser } from "../decorators";
+
+@Controller("email")
+@RequiresFeature(Feature.EMAIL_VERIFICATION)
+@UseGuards(JwtAuthGuard)
+export class EmailVerificationController {
+  constructor(private emailVerificationService: EmailVerificationService) {}
+
+  @Get("verify/:id/:hash")
+  @HttpCode(HttpStatus.OK)
+  async verify(
+    @Param("id") id: string,
+    @Param("hash") hash: string,
+    @Query("signature") signature: string,
+    @Query("expires") expires: string,
+    @CurrentUser() user: AuthUser,
+  ) {
+    await this.emailVerificationService.verify(user, id, hash, signature, expires);
+    return { message: "Email verified successfully." };
+  }
+
+  @Post("verification-notification")
+  @HttpCode(HttpStatus.OK)
+  async resend(@CurrentUser() user: AuthUser) {
+    if (user.emailVerifiedAt) {
+      return { message: "Email already verified." };
+    }
+    const verificationData = await this.emailVerificationService.sendVerificationNotification(user);
+    return { message: "Verification link sent.", ...verificationData };
+  }
+}
