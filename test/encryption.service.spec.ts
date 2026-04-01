@@ -1,4 +1,4 @@
-import { describe, it, expect, beforeEach } from "vitest";
+import { describe, it, expect, beforeEach, vi } from "vitest";
 import { Test, TestingModule } from "@nestjs/testing";
 import { EncryptionService } from "../src/services/encryption.service";
 import { AUTHENTICATION_OPTIONS } from "../src/authentication.constants";
@@ -61,5 +61,65 @@ describe("EncryptionService", () => {
     const encrypted = service.encrypt(plaintext);
     const decrypted = service.decrypt(encrypted);
     expect(decrypted).toBe(plaintext);
+  });
+
+  it("should throw on invalid encrypted data format (wrong number of parts)", () => {
+    expect(() => service.decrypt("onlyonepart")).toThrow(
+      "Invalid encrypted data format.",
+    );
+  });
+
+  it("should throw on invalid encrypted data format (two parts)", () => {
+    expect(() => service.decrypt("part1:part2")).toThrow(
+      "Invalid encrypted data format.",
+    );
+  });
+
+  it("should throw on invalid encrypted data format (four parts)", () => {
+    expect(() => service.decrypt("a:b:c:d")).toThrow(
+      "Invalid encrypted data format.",
+    );
+  });
+
+  it("should throw 'Failed to decrypt data' when decryption fails with corrupted data", () => {
+    // Valid format (3 parts) but corrupted content
+    const badIv = randomBytes(16).toString("base64");
+    const badTag = randomBytes(16).toString("base64");
+    const badCiphertext = "corrupted-base64-data";
+
+    expect(() => service.decrypt(`${badIv}:${badTag}:${badCiphertext}`)).toThrow(
+      "Failed to decrypt data.",
+    );
+  });
+
+  it("should throw 'Failed to decrypt data' when auth tag is wrong", () => {
+    const encrypted = service.encrypt("test");
+    const parts = encrypted.split(":");
+    // Corrupt the auth tag
+    parts[1] = randomBytes(16).toString("base64");
+    expect(() => service.decrypt(parts.join(":"))).toThrow("Failed to decrypt data.");
+  });
+
+  it("should re-throw 'Invalid encrypted data format.' if it somehow occurs inside try block", () => {
+    // This covers the defensive re-throw on line 43 by spying on Buffer.from
+    // to throw the specific error message inside the try block
+    const originalFrom = Buffer.from;
+    let callCount = 0;
+    const spy = vi.spyOn(Buffer, "from").mockImplementation((...args: any[]) => {
+      callCount++;
+      // The split on line 28 produces the 3-part check on line 29 which passes,
+      // then Buffer.from is called inside the try block (line 34)
+      // We let the format check pass, then throw on first Buffer.from inside try
+      if (callCount > 0 && args[1] === "base64") {
+        throw new Error("Invalid encrypted data format.");
+      }
+      return originalFrom.call(Buffer, ...args) as any;
+    });
+
+    try {
+      expect(() => service.decrypt("aaa:bbb:ccc")).toThrow("Invalid encrypted data format.");
+    } finally {
+      spy.mockRestore();
+    }
   });
 });

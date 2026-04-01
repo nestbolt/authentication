@@ -79,4 +79,42 @@ describe("VerificationThrottleGuard", () => {
 
     vi.restoreAllMocks();
   });
+
+  it("should use default config when verificationRateLimit is not set", () => {
+    const optionsNoLimit = {
+      features: [],
+      jwtSecret: "test",
+      refreshSecret: "test",
+      encryptionKey: "test",
+      userRepository: class {} as any,
+    };
+    guard = new VerificationThrottleGuard(optionsNoLimit as any);
+
+    // Default limit is 6
+    for (let i = 0; i < 6; i++) {
+      guard.canActivate(createMockContext());
+    }
+
+    expect(() => guard.canActivate(createMockContext())).toThrow(HttpException);
+  });
+
+  it("should handle missing user and ip in throttle key", () => {
+    const context = {
+      switchToHttp: () => ({
+        getRequest: () => ({ user: undefined, ip: undefined }),
+      }),
+    } as any;
+
+    expect(guard.canActivate(context)).toBe(true);
+  });
+
+  it("should handle user with no id", () => {
+    const context = {
+      switchToHttp: () => ({
+        getRequest: () => ({ user: {}, ip: "127.0.0.1" }),
+      }),
+    } as any;
+
+    expect(guard.canActivate(context)).toBe(true);
+  });
 });
