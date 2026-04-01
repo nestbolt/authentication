@@ -2,7 +2,7 @@
 
 All notable changes to `@nestbolt/authentication` will be documented in this file.
 
-## 0.1.1
+## v0.1.1
 
 ### Bug Fixes
 
@@ -10,7 +10,7 @@ All notable changes to `@nestbolt/authentication` will be documented in this fil
 - **forRootAsync missing PASSWORD_RESET_REPOSITORY** — The conditional `PASSWORD_RESET_REPOSITORY` registration present in `forRoot` was absent from `forRootAsync`. Now registers it via `ModuleRef.create()` when configured, or `null` when not (compatible with `@Optional()` injection).
 - **TwoFactorController.enable() crash on empty body** — Calling `POST /user/two-factor-authentication` without a request body caused a `TypeError` because `@Body()` returned `undefined`. Now handles optional body with safe navigation (`body?.force ?? false`).
 
-## 0.1.0
+## v0.1.0
 
 ### Features
 
