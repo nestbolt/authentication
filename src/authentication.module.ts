@@ -1,52 +1,44 @@
-import { DynamicModule, Module, Type } from "@nestjs/common";
+import { DynamicModule, Module, Provider, Type } from "@nestjs/common";
 import { JwtModule } from "@nestjs/jwt";
 import { PassportModule } from "@nestjs/passport";
 import {
-  AuthenticationModuleOptions,
-  AuthenticationAsyncOptions,
-  Feature,
-} from "./interfaces";
-import {
   AUTHENTICATION_OPTIONS,
-  USER_REPOSITORY,
   PASSWORD_RESET_REPOSITORY,
-  CREATES_NEW_USERS,
-  UPDATES_USER_PASSWORDS,
-  UPDATES_USER_PROFILE,
-  RESETS_USER_PASSWORDS,
+  USER_REPOSITORY,
 } from "./authentication.constants";
+import { AuthenticationAsyncOptions, AuthenticationModuleOptions, Feature } from "./interfaces";
 
 import { AuthController } from "./controllers/auth.controller";
-import { RegistrationController } from "./controllers/registration.controller";
-import { PasswordResetController } from "./controllers/password-reset.controller";
-import { EmailVerificationController } from "./controllers/email-verification.controller";
-import { ProfileController } from "./controllers/profile.controller";
-import { PasswordController } from "./controllers/password.controller";
 import { ConfirmPasswordController } from "./controllers/confirm-password.controller";
-import { TwoFactorController } from "./controllers/two-factor.controller";
+import { EmailVerificationController } from "./controllers/email-verification.controller";
+import { PasswordResetController } from "./controllers/password-reset.controller";
+import { PasswordController } from "./controllers/password.controller";
+import { ProfileController } from "./controllers/profile.controller";
+import { RegistrationController } from "./controllers/registration.controller";
 import { TwoFactorChallengeController } from "./controllers/two-factor-challenge.controller";
+import { TwoFactorController } from "./controllers/two-factor.controller";
 
 import { AuthService } from "./services/auth.service";
-import { RegistrationService } from "./services/registration.service";
-import { PasswordResetService } from "./services/password-reset.service";
-import { EmailVerificationService } from "./services/email-verification.service";
-import { ProfileService } from "./services/profile.service";
-import { PasswordService } from "./services/password.service";
 import { ConfirmPasswordService } from "./services/confirm-password.service";
-import { TwoFactorService } from "./services/two-factor.service";
-import { TwoFactorProviderService } from "./services/two-factor-provider.service";
+import { EmailVerificationService } from "./services/email-verification.service";
 import { EncryptionService } from "./services/encryption.service";
+import { PasswordResetService } from "./services/password-reset.service";
+import { PasswordService } from "./services/password.service";
+import { ProfileService } from "./services/profile.service";
 import { RecoveryCodeService } from "./services/recovery-code.service";
+import { RegistrationService } from "./services/registration.service";
+import { TwoFactorProviderService } from "./services/two-factor-provider.service";
+import { TwoFactorService } from "./services/two-factor.service";
 
-import { LocalStrategy } from "./strategies/local.strategy";
-import { JwtStrategy } from "./strategies/jwt.strategy";
 import { JwtRefreshStrategy } from "./strategies/jwt-refresh.strategy";
+import { JwtStrategy } from "./strategies/jwt.strategy";
+import { LocalStrategy } from "./strategies/local.strategy";
 
+import { FeatureEnabledGuard } from "./guards/feature-enabled.guard";
+import { GuestGuard } from "./guards/guest.guard";
 import { JwtAuthGuard } from "./guards/jwt-auth.guard";
 import { LoginThrottleGuard } from "./guards/login-throttle.guard";
-import { FeatureEnabledGuard } from "./guards/feature-enabled.guard";
 import { PasswordConfirmedGuard } from "./guards/password-confirmed.guard";
-import { GuestGuard } from "./guards/guest.guard";
 
 import { CanonicalizeUsernameInterceptor } from "./interceptors/canonicalize-username.interceptor";
 
@@ -75,7 +67,7 @@ export class AuthenticationModule {
       controllers.push(TwoFactorChallengeController);
     }
 
-    const providers: any[] = [
+    const providers: Provider[] = [
       { provide: AUTHENTICATION_OPTIONS, useValue: options },
       { provide: USER_REPOSITORY, useClass: options.userRepository },
       // Core services
@@ -131,7 +123,7 @@ export class AuthenticationModule {
         PassportModule.register({ defaultStrategy: "jwt" }),
         JwtModule.register({
           secret: options.jwtSecret,
-          signOptions: { expiresIn: (options.jwtExpiresIn ?? "15m") as any },
+          signOptions: { expiresIn: options.jwtExpiresIn ?? "15m" },
         }),
       ],
       controllers,
@@ -149,9 +141,7 @@ export class AuthenticationModule {
         ...(options.features.includes(Feature.EMAIL_VERIFICATION)
           ? [EmailVerificationService]
           : []),
-        ...(options.features.includes(Feature.RESET_PASSWORDS)
-          ? [PasswordResetService]
-          : []),
+        ...(options.features.includes(Feature.RESET_PASSWORDS) ? [PasswordResetService] : []),
       ],
     };
   }
@@ -170,7 +160,7 @@ export class AuthenticationModule {
             const options = await asyncOptions.useFactory(...args);
             return {
               secret: options.jwtSecret,
-              signOptions: { expiresIn: (options.jwtExpiresIn ?? "15m") as any },
+              signOptions: { expiresIn: options.jwtExpiresIn ?? "15m" },
             };
           },
         }),

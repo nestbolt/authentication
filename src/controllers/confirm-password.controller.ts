@@ -1,19 +1,19 @@
 import {
-  Controller,
-  Post,
-  Get,
   Body,
-  Query,
+  Controller,
+  Get,
   HttpCode,
   HttpStatus,
-  UseGuards,
+  Post,
+  Query,
   UnprocessableEntityException,
+  UseGuards,
 } from "@nestjs/common";
 import { CurrentUser } from "../decorators";
-import { AuthUser } from "../interfaces";
-import { JwtAuthGuard } from "../guards/jwt-auth.guard";
-import { ConfirmPasswordService } from "../services/confirm-password.service";
 import { ConfirmPasswordDto } from "../dto/confirm-password.dto";
+import { JwtAuthGuard } from "../guards/jwt-auth.guard";
+import { AuthUser } from "../interfaces";
+import { ConfirmPasswordService } from "../services/confirm-password.service";
 
 @Controller("user")
 @UseGuards(JwtAuthGuard)

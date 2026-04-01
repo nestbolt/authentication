@@ -1,8 +1,14 @@
-import { CanActivate, ExecutionContext, Injectable, Inject, NotFoundException } from "@nestjs/common";
+import {
+  CanActivate,
+  ExecutionContext,
+  Inject,
+  Injectable,
+  NotFoundException,
+} from "@nestjs/common";
 import { Reflector } from "@nestjs/core";
 import { AUTHENTICATION_OPTIONS } from "../authentication.constants";
-import { AuthenticationModuleOptions, Feature } from "../interfaces";
 import { REQUIRED_FEATURE_KEY } from "../decorators";
+import { AuthenticationModuleOptions, Feature } from "../interfaces";
 
 @Injectable()
 export class FeatureEnabledGuard implements CanActivate {

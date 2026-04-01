@@ -1,4 +1,4 @@
-import { Injectable, Inject, UnauthorizedException } from "@nestjs/common";
+import { Inject, Injectable, UnauthorizedException } from "@nestjs/common";
 import { PassportStrategy } from "@nestjs/passport";
 import { Strategy } from "passport-local";
 import { AUTHENTICATION_OPTIONS } from "../authentication.constants";

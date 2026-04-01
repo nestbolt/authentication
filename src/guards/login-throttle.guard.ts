@@ -3,13 +3,18 @@ import {
   ExecutionContext,
   HttpException,
   HttpStatus,
-  Injectable,
   Inject,
+  Injectable,
   Optional,
 } from "@nestjs/common";
 import { AUTHENTICATION_OPTIONS } from "../authentication.constants";
-import { AuthenticationModuleOptions } from "../interfaces";
 import { AUTH_EVENTS } from "../events";
+import { AuthenticationModuleOptions, EventEmitterLike } from "../interfaces";
+
+interface ThrottleRequest {
+  body?: Record<string, unknown>;
+  ip?: string;
+}
 
 @Injectable()
 export class LoginThrottleGuard implements CanActivate {
@@ -17,7 +22,7 @@ export class LoginThrottleGuard implements CanActivate {
 
   constructor(
     @Inject(AUTHENTICATION_OPTIONS) private options: AuthenticationModuleOptions,
-    @Optional() @Inject("EventEmitter2") private eventEmitter?: any,
+    @Optional() @Inject("EventEmitter2") private eventEmitter?: EventEmitterLike,
   ) {}
 
   canActivate(context: ExecutionContext): boolean {
@@ -38,7 +43,7 @@ export class LoginThrottleGuard implements CanActivate {
     return true;
   }
 
-  increment(request: any): void {
+  increment(request: ThrottleRequest): void {
     const key = this.throttleKey(request);
     const now = Date.now();
     const config = this.options.loginRateLimit ?? { ttl: 60000, limit: 5 };
@@ -52,11 +57,11 @@ export class LoginThrottleGuard implements CanActivate {
     this.attempts.set(key, record);
   }
 
-  clear(request: any): void {
+  clear(request: ThrottleRequest): void {
     this.attempts.delete(this.throttleKey(request));
   }
 
-  private throttleKey(request: any): string {
+  private throttleKey(request: ThrottleRequest): string {
     const username = request.body?.[this.options.usernameField ?? "email"] ?? "";
     const ip = request.ip ?? "";
     return `${String(username).toLowerCase()}|${ip}`;

@@ -1,13 +1,11 @@
-import { Injectable, NestInterceptor, ExecutionContext, CallHandler, Inject } from "@nestjs/common";
+import { CallHandler, ExecutionContext, Inject, Injectable, NestInterceptor } from "@nestjs/common";
 import { Observable } from "rxjs";
 import { AUTHENTICATION_OPTIONS } from "../authentication.constants";
 import { AuthenticationModuleOptions } from "../interfaces";
 
 @Injectable()
 export class CanonicalizeUsernameInterceptor implements NestInterceptor {
-  constructor(
-    @Inject(AUTHENTICATION_OPTIONS) private options: AuthenticationModuleOptions,
-  ) {}
+  constructor(@Inject(AUTHENTICATION_OPTIONS) private options: AuthenticationModuleOptions) {}
 
   intercept(context: ExecutionContext, next: CallHandler): Observable<any> {
     if (this.options.lowercaseUsernames !== false) {

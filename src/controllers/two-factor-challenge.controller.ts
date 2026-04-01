@@ -1,20 +1,20 @@
 import {
-  Controller,
-  Post,
+  BadRequestException,
   Body,
+  Controller,
   HttpCode,
   HttpStatus,
-  BadRequestException,
-  UnprocessableEntityException,
   Inject,
   Optional,
+  Post,
+  UnprocessableEntityException,
 } from "@nestjs/common";
 import { Public, RequiresFeature } from "../decorators";
-import { Feature } from "../interfaces";
-import { AuthService } from "../services/auth.service";
-import { TwoFactorService } from "../services/two-factor.service";
 import { TwoFactorChallengeDto } from "../dto/two-factor-challenge.dto";
 import { AUTH_EVENTS } from "../events";
+import { EventEmitterLike, Feature } from "../interfaces";
+import { AuthService } from "../services/auth.service";
+import { TwoFactorService } from "../services/two-factor.service";
 
 @Controller()
 @RequiresFeature(Feature.TWO_FACTOR_AUTHENTICATION)
@@ -22,7 +22,7 @@ export class TwoFactorChallengeController {
   constructor(
     private authService: AuthService,
     private twoFactorService: TwoFactorService,
-    @Optional() @Inject("EventEmitter2") private eventEmitter?: any,
+    @Optional() @Inject("EventEmitter2") private eventEmitter?: EventEmitterLike,
   ) {}
 
   @Post("two-factor-challenge")

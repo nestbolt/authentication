@@ -1,24 +1,20 @@
-import {
-  Injectable,
-  Inject,
-  Optional,
-  UnprocessableEntityException,
-} from "@nestjs/common";
-import { randomBytes, createHash } from "crypto";
+import { Inject, Injectable, Optional, UnprocessableEntityException } from "@nestjs/common";
 import * as bcrypt from "bcrypt";
+import { randomBytes } from "crypto";
 import {
   AUTHENTICATION_OPTIONS,
-  USER_REPOSITORY,
   PASSWORD_RESET_REPOSITORY,
   RESETS_USER_PASSWORDS,
+  USER_REPOSITORY,
 } from "../authentication.constants";
+import { AUTH_EVENTS } from "../events";
 import {
   AuthenticationModuleOptions,
-  UserRepository,
+  EventEmitterLike,
   PasswordResetRepository,
   ResetsUserPasswords,
+  UserRepository,
 } from "../interfaces";
-import { AUTH_EVENTS } from "../events";
 
 @Injectable()
 export class PasswordResetService {
@@ -27,7 +23,7 @@ export class PasswordResetService {
     @Inject(PASSWORD_RESET_REPOSITORY) private resetRepository: PasswordResetRepository,
     @Inject(RESETS_USER_PASSWORDS) private resetter: ResetsUserPasswords,
     @Inject(AUTHENTICATION_OPTIONS) private options: AuthenticationModuleOptions,
-    @Optional() @Inject("EventEmitter2") private eventEmitter?: any,
+    @Optional() @Inject("EventEmitter2") private eventEmitter?: EventEmitterLike,
   ) {}
 
   async sendResetLink(email: string): Promise<{ token: string }> {
@@ -46,11 +42,7 @@ export class PasswordResetService {
     return { token: rawToken };
   }
 
-  async reset(data: {
-    email: string;
-    token: string;
-    password: string;
-  }): Promise<void> {
+  async reset(data: { email: string; token: string; password: string }): Promise<void> {
     const record = await this.resetRepository.findByEmail(data.email);
     if (!record) {
       throw new UnprocessableEntityException("Invalid password reset token.");

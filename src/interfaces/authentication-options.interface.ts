@@ -1,6 +1,7 @@
 import { Type } from "@nestjs/common";
-import { UserRepository } from "./user-repository.interface";
+import type { StringValue } from "ms";
 import { PasswordResetRepository } from "./password-reset-repository.interface";
+import { UserRepository } from "./user-repository.interface";
 
 export enum Feature {
   REGISTRATION = "registration",
@@ -29,9 +30,9 @@ export interface AuthenticationModuleOptions {
   lowercaseUsernames?: boolean;
 
   jwtSecret: string;
-  jwtExpiresIn?: string;
+  jwtExpiresIn?: StringValue;
   refreshSecret: string;
-  refreshExpiresIn?: string;
+  refreshExpiresIn?: StringValue;
 
   loginRateLimit?: { ttl: number; limit: number };
   twoFactorRateLimit?: { ttl: number; limit: number };

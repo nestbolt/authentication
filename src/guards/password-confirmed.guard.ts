@@ -1,13 +1,16 @@
-import { CanActivate, ExecutionContext, ForbiddenException, Injectable, Inject } from "@nestjs/common";
+import {
+  CanActivate,
+  ExecutionContext,
+  ForbiddenException,
+  Inject,
+  Injectable,
+} from "@nestjs/common";
 import { AUTHENTICATION_OPTIONS } from "../authentication.constants";
-import { AuthenticationModuleOptions } from "../interfaces";
-import { AuthUser } from "../interfaces";
+import { AuthenticationModuleOptions, AuthUser } from "../interfaces";
 
 @Injectable()
 export class PasswordConfirmedGuard implements CanActivate {
-  constructor(
-    @Inject(AUTHENTICATION_OPTIONS) private options: AuthenticationModuleOptions,
-  ) {}
+  constructor(@Inject(AUTHENTICATION_OPTIONS) private options: AuthenticationModuleOptions) {}
 
   canActivate(context: ExecutionContext): boolean {
     if (!this.options.twoFactorOptions?.confirmPassword) {

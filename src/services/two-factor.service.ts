@@ -1,17 +1,17 @@
 import {
-  Injectable,
   Inject,
+  Injectable,
+  NotFoundException,
   Optional,
   UnprocessableEntityException,
-  NotFoundException,
 } from "@nestjs/common";
 import { timingSafeEqual } from "crypto";
 import { AUTHENTICATION_OPTIONS, USER_REPOSITORY } from "../authentication.constants";
-import { AuthenticationModuleOptions, UserRepository, AuthUser } from "../interfaces";
-import { TwoFactorProviderService } from "./two-factor-provider.service";
+import { AUTH_EVENTS } from "../events";
+import { AuthenticationModuleOptions, AuthUser, EventEmitterLike, UserRepository } from "../interfaces";
 import { EncryptionService } from "./encryption.service";
 import { RecoveryCodeService } from "./recovery-code.service";
-import { AUTH_EVENTS } from "../events";
+import { TwoFactorProviderService } from "./two-factor-provider.service";
 
 @Injectable()
 export class TwoFactorService {
@@ -21,7 +21,7 @@ export class TwoFactorService {
     private twoFactorProvider: TwoFactorProviderService,
     private encryptionService: EncryptionService,
     private recoveryCodeService: RecoveryCodeService,
-    @Optional() @Inject("EventEmitter2") private eventEmitter?: any,
+    @Optional() @Inject("EventEmitter2") private eventEmitter?: EventEmitterLike,
   ) {}
 
   async enable(user: AuthUser, force: boolean = false): Promise<void> {

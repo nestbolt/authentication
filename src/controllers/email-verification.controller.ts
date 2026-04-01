@@ -1,18 +1,17 @@
 import {
   Controller,
   Get,
-  Post,
-  Param,
-  Query,
   HttpCode,
   HttpStatus,
+  Param,
+  Post,
+  Query,
   UseGuards,
 } from "@nestjs/common";
-import { RequiresFeature } from "../decorators";
-import { Feature, AuthUser } from "../interfaces";
+import { CurrentUser, RequiresFeature } from "../decorators";
 import { JwtAuthGuard } from "../guards/jwt-auth.guard";
+import { AuthUser, Feature } from "../interfaces";
 import { EmailVerificationService } from "../services/email-verification.service";
-import { CurrentUser } from "../decorators";
 
 @Controller("email")
 @RequiresFeature(Feature.EMAIL_VERIFICATION)

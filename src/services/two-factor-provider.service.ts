@@ -1,4 +1,4 @@
-import { Injectable, Inject } from "@nestjs/common";
+import { Inject, Injectable } from "@nestjs/common";
 import { authenticator } from "otplib";
 import * as qrcode from "qrcode";
 import { AUTHENTICATION_OPTIONS } from "../authentication.constants";
@@ -6,9 +6,7 @@ import { AuthenticationModuleOptions } from "../interfaces";
 
 @Injectable()
 export class TwoFactorProviderService {
-  constructor(
-    @Inject(AUTHENTICATION_OPTIONS) private options: AuthenticationModuleOptions,
-  ) {
+  constructor(@Inject(AUTHENTICATION_OPTIONS) private options: AuthenticationModuleOptions) {
     const window = options.twoFactorOptions?.window;
     if (window !== undefined) {
       authenticator.options = { window };

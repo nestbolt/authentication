@@ -1,8 +1,8 @@
-import { Injectable, Inject, UnauthorizedException } from "@nestjs/common";
+import { Inject, Injectable, UnauthorizedException } from "@nestjs/common";
 import { JwtService } from "@nestjs/jwt";
 import * as bcrypt from "bcrypt";
 import { AUTHENTICATION_OPTIONS, USER_REPOSITORY } from "../authentication.constants";
-import { AuthenticationModuleOptions, UserRepository, AuthUser } from "../interfaces";
+import { AuthenticationModuleOptions, AuthUser, UserRepository } from "../interfaces";
 
 @Injectable()
 export class AuthService {
@@ -27,12 +27,12 @@ export class AuthService {
 
     const accessToken = this.jwtService.sign(payload, {
       secret: this.options.jwtSecret,
-      expiresIn: (this.options.jwtExpiresIn ?? "15m") as any,
+      expiresIn: this.options.jwtExpiresIn ?? "15m",
     });
 
     const refreshToken = this.jwtService.sign(payload, {
       secret: this.options.refreshSecret,
-      expiresIn: (this.options.refreshExpiresIn ?? "7d") as any,
+      expiresIn: this.options.refreshExpiresIn ?? "7d",
     });
 
     return { accessToken, refreshToken };
@@ -41,13 +41,11 @@ export class AuthService {
   async createTwoFactorChallenge(user: AuthUser, remember: boolean): Promise<string> {
     return this.jwtService.sign(
       { sub: user.id, purpose: "2fa-challenge", remember },
-      { secret: this.options.jwtSecret, expiresIn: "5m" as any },
+      { secret: this.options.jwtSecret, expiresIn: "5m" },
     );
   }
 
-  async getChallengedUser(
-    challengeToken: string,
-  ): Promise<{ user: AuthUser; remember: boolean }> {
+  async getChallengedUser(challengeToken: string): Promise<{ user: AuthUser; remember: boolean }> {
     try {
       const payload = this.jwtService.verify(challengeToken, {
         secret: this.options.jwtSecret,

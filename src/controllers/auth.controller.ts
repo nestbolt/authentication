@@ -1,33 +1,32 @@
 import {
-  Controller,
-  Post,
   Body,
-  Req,
+  Controller,
   HttpCode,
   HttpStatus,
-  UseGuards,
-  UseInterceptors,
   Inject,
   Optional,
+  Post,
+  Req,
+  UseGuards,
+  UseInterceptors,
 } from "@nestjs/common";
-import { Public } from "../decorators";
-import { LocalAuthGuard } from "../guards/local-auth.guard";
+import { AUTHENTICATION_OPTIONS } from "../authentication.constants";
+import { CurrentUser, Public } from "../decorators";
+import { LoginDto } from "../dto/login.dto";
+import { AUTH_EVENTS } from "../events";
 import { JwtAuthGuard } from "../guards/jwt-auth.guard";
+import { LocalAuthGuard } from "../guards/local-auth.guard";
 import { LoginThrottleGuard } from "../guards/login-throttle.guard";
 import { CanonicalizeUsernameInterceptor } from "../interceptors/canonicalize-username.interceptor";
+import { AuthenticationModuleOptions, AuthUser, EventEmitterLike, Feature } from "../interfaces";
 import { AuthService } from "../services/auth.service";
-import { LoginDto } from "../dto/login.dto";
-import { CurrentUser } from "../decorators";
-import { AUTHENTICATION_OPTIONS } from "../authentication.constants";
-import { AuthenticationModuleOptions, Feature, AuthUser } from "../interfaces";
-import { AUTH_EVENTS } from "../events";
 
 @Controller()
 export class AuthController {
   constructor(
     private authService: AuthService,
     @Inject(AUTHENTICATION_OPTIONS) private options: AuthenticationModuleOptions,
-    @Optional() @Inject("EventEmitter2") private eventEmitter?: any,
+    @Optional() @Inject("EventEmitter2") private eventEmitter?: EventEmitterLike,
   ) {}
 
   @Post("login")
@@ -35,8 +34,8 @@ export class AuthController {
   @UseGuards(LoginThrottleGuard, LocalAuthGuard)
   @UseInterceptors(CanonicalizeUsernameInterceptor)
   @HttpCode(HttpStatus.OK)
-  async login(@Body() _loginDto: LoginDto, @Req() request: any) {
-    const user = request.user as AuthUser;
+  async login(@Body() _loginDto: LoginDto, @Req() request: { user: AuthUser }) {
+    const user = request.user;
 
     if (this.options.features.includes(Feature.TWO_FACTOR_AUTHENTICATION)) {
       if (this.authService.userRequiresTwoFactor(user)) {

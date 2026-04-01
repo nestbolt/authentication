@@ -1,19 +1,19 @@
 import {
-  Controller,
-  Post,
-  Get,
-  Delete,
   Body,
+  Controller,
+  Delete,
+  Get,
   HttpCode,
   HttpStatus,
+  Post,
   UseGuards,
 } from "@nestjs/common";
-import { RequiresFeature, CurrentUser } from "../decorators";
-import { Feature, AuthUser } from "../interfaces";
+import { CurrentUser, RequiresFeature } from "../decorators";
+import { TwoFactorConfirmDto } from "../dto/two-factor-confirm.dto";
 import { JwtAuthGuard } from "../guards/jwt-auth.guard";
 import { PasswordConfirmedGuard } from "../guards/password-confirmed.guard";
+import { AuthUser, Feature } from "../interfaces";
 import { TwoFactorService } from "../services/two-factor.service";
-import { TwoFactorConfirmDto } from "../dto/two-factor-confirm.dto";
 
 @Controller("user")
 @RequiresFeature(Feature.TWO_FACTOR_AUTHENTICATION)

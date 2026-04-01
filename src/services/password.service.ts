@@ -1,13 +1,13 @@
-import { Injectable, Inject, Optional } from "@nestjs/common";
+import { Inject, Injectable, Optional } from "@nestjs/common";
 import { UPDATES_USER_PASSWORDS } from "../authentication.constants";
-import { UpdatesUserPasswords, AuthUser } from "../interfaces";
 import { AUTH_EVENTS } from "../events";
+import { AuthUser, EventEmitterLike, UpdatesUserPasswords } from "../interfaces";
 
 @Injectable()
 export class PasswordService {
   constructor(
     @Inject(UPDATES_USER_PASSWORDS) private updater: UpdatesUserPasswords,
-    @Optional() @Inject("EventEmitter2") private eventEmitter?: any,
+    @Optional() @Inject("EventEmitter2") private eventEmitter?: EventEmitterLike,
   ) {}
 
   async update(user: AuthUser, data: Record<string, any>): Promise<void> {

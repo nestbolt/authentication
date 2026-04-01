@@ -1,7 +1,7 @@
-import { Injectable, Inject } from "@nestjs/common";
+import { Inject, Injectable } from "@nestjs/common";
 import * as bcrypt from "bcrypt";
 import { AUTHENTICATION_OPTIONS, USER_REPOSITORY } from "../authentication.constants";
-import { AuthenticationModuleOptions, UserRepository, AuthUser } from "../interfaces";
+import { AuthenticationModuleOptions, AuthUser, UserRepository } from "../interfaces";
 
 @Injectable()
 export class ConfirmPasswordService {

@@ -1,15 +1,15 @@
-import { Injectable, Inject, Optional } from "@nestjs/common";
+import { Inject, Injectable, Optional } from "@nestjs/common";
 import { CREATES_NEW_USERS } from "../authentication.constants";
-import { CreatesNewUsers, AuthUser } from "../interfaces";
-import { AuthService } from "./auth.service";
 import { AUTH_EVENTS } from "../events";
+import { AuthUser, CreatesNewUsers, EventEmitterLike } from "../interfaces";
+import { AuthService } from "./auth.service";
 
 @Injectable()
 export class RegistrationService {
   constructor(
     @Inject(CREATES_NEW_USERS) private creator: CreatesNewUsers,
     private authService: AuthService,
-    @Optional() @Inject("EventEmitter2") private eventEmitter?: any,
+    @Optional() @Inject("EventEmitter2") private eventEmitter?: EventEmitterLike,
   ) {}
 
   async register(

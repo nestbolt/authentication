@@ -1,9 +1,8 @@
-import { Controller, Post, Body, HttpCode, HttpStatus } from "@nestjs/common";
-import { Public } from "../decorators";
-import { RequiresFeature } from "../decorators";
+import { Body, Controller, HttpCode, HttpStatus, Post } from "@nestjs/common";
+import { Public, RequiresFeature } from "../decorators";
+import { RegisterDto } from "../dto/register.dto";
 import { Feature } from "../interfaces";
 import { RegistrationService } from "../services/registration.service";
-import { RegisterDto } from "../dto/register.dto";
 
 @Controller()
 @RequiresFeature(Feature.REGISTRATION)

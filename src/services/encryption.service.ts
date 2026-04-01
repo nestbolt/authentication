@@ -1,4 +1,4 @@
-import { Injectable, Inject } from "@nestjs/common";
+import { Inject, Injectable } from "@nestjs/common";
 import { createCipheriv, createDecipheriv, randomBytes } from "crypto";
 import { AUTHENTICATION_OPTIONS } from "../authentication.constants";
 import { AuthenticationModuleOptions } from "../interfaces";
@@ -8,9 +8,7 @@ export class EncryptionService {
   private readonly algorithm = "aes-256-gcm";
   private readonly keyBuffer: Buffer;
 
-  constructor(
-    @Inject(AUTHENTICATION_OPTIONS) private options: AuthenticationModuleOptions,
-  ) {
+  constructor(@Inject(AUTHENTICATION_OPTIONS) private options: AuthenticationModuleOptions) {
     this.keyBuffer = Buffer.from(options.encryptionKey, "base64");
     if (this.keyBuffer.length !== 32) {
       throw new Error("Encryption key must be 32 bytes (base64-encoded).");

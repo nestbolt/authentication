@@ -1,21 +1,21 @@
 import {
-  Injectable,
   Inject,
+  Injectable,
   Optional,
   UnauthorizedException,
   UnprocessableEntityException,
 } from "@nestjs/common";
 import { createHmac, timingSafeEqual } from "crypto";
 import { AUTHENTICATION_OPTIONS, USER_REPOSITORY } from "../authentication.constants";
-import { AuthenticationModuleOptions, UserRepository, AuthUser } from "../interfaces";
 import { AUTH_EVENTS } from "../events";
+import { AuthenticationModuleOptions, AuthUser, EventEmitterLike, UserRepository } from "../interfaces";
 
 @Injectable()
 export class EmailVerificationService {
   constructor(
     @Inject(USER_REPOSITORY) private userRepository: UserRepository,
     @Inject(AUTHENTICATION_OPTIONS) private options: AuthenticationModuleOptions,
-    @Optional() @Inject("EventEmitter2") private eventEmitter?: any,
+    @Optional() @Inject("EventEmitter2") private eventEmitter?: EventEmitterLike,
   ) {}
 
   generateVerificationUrl(user: AuthUser): {
@@ -25,9 +25,7 @@ export class EmailVerificationService {
     expires: string;
   } {
     const expires = String(Date.now() + 60 * 60 * 1000);
-    const hash = createHmac("sha256", this.options.jwtSecret)
-      .update(user.email)
-      .digest("hex");
+    const hash = createHmac("sha256", this.options.jwtSecret).update(user.email).digest("hex");
     const signPayload = `${user.id}:${hash}:${expires}`;
     const signature = createHmac("sha256", this.options.jwtSecret)
       .update(signPayload)
@@ -77,7 +75,9 @@ export class EmailVerificationService {
     }
   }
 
-  async sendVerificationNotification(user: AuthUser): Promise<{ id: string; hash: string; signature: string; expires: string }> {
+  async sendVerificationNotification(
+    user: AuthUser,
+  ): Promise<{ id: string; hash: string; signature: string; expires: string }> {
     return this.generateVerificationUrl(user);
   }
 }

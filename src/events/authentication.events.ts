@@ -27,5 +27,5 @@ export interface RecoveryCodeReplacedEvent extends UserEvent {
 }
 
 export interface LockoutEvent {
-  request: any;
+  request: Record<string, unknown>;
 }
