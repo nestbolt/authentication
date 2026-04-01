@@ -25,13 +25,24 @@ export class EncryptionService {
   }
 
   decrypt(encryptedText: string): string {
-    const [ivB64, authTagB64, ciphertext] = encryptedText.split(":");
-    const iv = Buffer.from(ivB64, "base64");
-    const authTag = Buffer.from(authTagB64, "base64");
-    const decipher = createDecipheriv(this.algorithm, this.keyBuffer, iv);
-    decipher.setAuthTag(authTag);
-    let decrypted = decipher.update(ciphertext, "base64", "utf8");
-    decrypted += decipher.final("utf8");
-    return decrypted;
+    const parts = encryptedText.split(":");
+    if (parts.length !== 3) {
+      throw new Error("Invalid encrypted data format.");
+    }
+    try {
+      const [ivB64, authTagB64, ciphertext] = parts;
+      const iv = Buffer.from(ivB64, "base64");
+      const authTag = Buffer.from(authTagB64, "base64");
+      const decipher = createDecipheriv(this.algorithm, this.keyBuffer, iv);
+      decipher.setAuthTag(authTag);
+      let decrypted = decipher.update(ciphertext, "base64", "utf8");
+      decrypted += decipher.final("utf8");
+      return decrypted;
+    } catch (error) {
+      if (error instanceof Error && error.message === "Invalid encrypted data format.") {
+        throw error;
+      }
+      throw new Error("Failed to decrypt data.");
+    }
   }
 }

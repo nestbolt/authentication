@@ -39,6 +39,8 @@ import { GuestGuard } from "./guards/guest.guard";
 import { JwtAuthGuard } from "./guards/jwt-auth.guard";
 import { LoginThrottleGuard } from "./guards/login-throttle.guard";
 import { PasswordConfirmedGuard } from "./guards/password-confirmed.guard";
+import { TwoFactorThrottleGuard } from "./guards/two-factor-throttle.guard";
+import { VerificationThrottleGuard } from "./guards/verification-throttle.guard";
 
 import { CanonicalizeUsernameInterceptor } from "./interceptors/canonicalize-username.interceptor";
 
@@ -82,6 +84,8 @@ export class AuthenticationModule {
       // Guards
       JwtAuthGuard,
       LoginThrottleGuard,
+      TwoFactorThrottleGuard,
+      VerificationThrottleGuard,
       FeatureEnabledGuard,
       PasswordConfirmedGuard,
       GuestGuard,
@@ -187,6 +191,8 @@ export class AuthenticationModule {
         JwtRefreshStrategy,
         JwtAuthGuard,
         LoginThrottleGuard,
+        TwoFactorThrottleGuard,
+        VerificationThrottleGuard,
         FeatureEnabledGuard,
         PasswordConfirmedGuard,
         GuestGuard,

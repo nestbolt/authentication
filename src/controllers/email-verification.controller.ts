@@ -10,6 +10,7 @@ import {
 } from "@nestjs/common";
 import { CurrentUser, RequiresFeature } from "../decorators";
 import { JwtAuthGuard } from "../guards/jwt-auth.guard";
+import { VerificationThrottleGuard } from "../guards/verification-throttle.guard";
 import { AuthUser, Feature } from "../interfaces";
 import { EmailVerificationService } from "../services/email-verification.service";
 
@@ -33,6 +34,7 @@ export class EmailVerificationController {
   }
 
   @Post("verification-notification")
+  @UseGuards(VerificationThrottleGuard)
   @HttpCode(HttpStatus.OK)
   async resend(@CurrentUser() user: AuthUser) {
     if (user.emailVerifiedAt) {

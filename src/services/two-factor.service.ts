@@ -159,6 +159,10 @@ export class TwoFactorService {
     if (!user.twoFactorRecoveryCodes) {
       return [];
     }
-    return JSON.parse(this.encryptionService.decrypt(user.twoFactorRecoveryCodes));
+    try {
+      return JSON.parse(this.encryptionService.decrypt(user.twoFactorRecoveryCodes));
+    } catch {
+      return [];
+    }
   }
 }

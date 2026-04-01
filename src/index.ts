@@ -51,6 +51,8 @@ export {
   LocalAuthGuard,
   LoginThrottleGuard,
   PasswordConfirmedGuard,
+  TwoFactorThrottleGuard,
+  VerificationThrottleGuard,
 } from "./guards";
 
 // Interceptors
