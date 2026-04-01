@@ -1,4 +1,5 @@
 import {
+  BadRequestException,
   Controller,
   Get,
   HttpCode,
@@ -9,6 +10,7 @@ import {
   UseGuards,
 } from "@nestjs/common";
 import { CurrentUser, RequiresFeature } from "../decorators";
+import { FeatureEnabledGuard } from "../guards/feature-enabled.guard";
 import { JwtAuthGuard } from "../guards/jwt-auth.guard";
 import { VerificationThrottleGuard } from "../guards/verification-throttle.guard";
 import { AuthUser, Feature } from "../interfaces";
@@ -16,7 +18,7 @@ import { EmailVerificationService } from "../services/email-verification.service
 
 @Controller("email")
 @RequiresFeature(Feature.EMAIL_VERIFICATION)
-@UseGuards(JwtAuthGuard)
+@UseGuards(FeatureEnabledGuard, JwtAuthGuard)
 export class EmailVerificationController {
   constructor(private emailVerificationService: EmailVerificationService) {}
 
@@ -25,11 +27,14 @@ export class EmailVerificationController {
   async verify(
     @Param("id") id: string,
     @Param("hash") hash: string,
-    @Query("signature") signature: string,
-    @Query("expires") expires: string,
-    @CurrentUser() user: AuthUser,
+    @Query("signature") signature?: string,
+    @Query("expires") expires?: string,
+    @CurrentUser() user?: AuthUser,
   ) {
-    await this.emailVerificationService.verify(user, id, hash, signature, expires);
+    if (!signature || !expires) {
+      throw new BadRequestException("Missing signature or expires parameter.");
+    }
+    await this.emailVerificationService.verify(user!, id, hash, signature, expires);
     return { message: "Email verified successfully." };
   }
 

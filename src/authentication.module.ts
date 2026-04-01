@@ -139,13 +139,18 @@ export class AuthenticationModule {
         ConfirmPasswordService,
         AUTHENTICATION_OPTIONS,
         USER_REPOSITORY,
-        ...(options.features.includes(Feature.TWO_FACTOR_AUTHENTICATION)
-          ? [TwoFactorService, TwoFactorProviderService]
-          : []),
+        ...(options.features.includes(Feature.REGISTRATION) ? [RegistrationService] : []),
+        ...(options.features.includes(Feature.RESET_PASSWORDS) ? [PasswordResetService] : []),
         ...(options.features.includes(Feature.EMAIL_VERIFICATION)
           ? [EmailVerificationService]
           : []),
-        ...(options.features.includes(Feature.RESET_PASSWORDS) ? [PasswordResetService] : []),
+        ...(options.features.includes(Feature.UPDATE_PROFILE_INFORMATION)
+          ? [ProfileService]
+          : []),
+        ...(options.features.includes(Feature.UPDATE_PASSWORDS) ? [PasswordService] : []),
+        ...(options.features.includes(Feature.TWO_FACTOR_AUTHENTICATION)
+          ? [TwoFactorService, TwoFactorProviderService]
+          : []),
       ],
     };
   }
@@ -168,6 +173,17 @@ export class AuthenticationModule {
             };
           },
         }),
+      ],
+      controllers: [
+        AuthController,
+        ConfirmPasswordController,
+        RegistrationController,
+        PasswordResetController,
+        EmailVerificationController,
+        ProfileController,
+        PasswordController,
+        TwoFactorController,
+        TwoFactorChallengeController,
       ],
       providers: [
         {
@@ -210,10 +226,13 @@ export class AuthenticationModule {
         EncryptionService,
         RecoveryCodeService,
         ConfirmPasswordService,
+        RegistrationService,
+        PasswordResetService,
+        EmailVerificationService,
+        ProfileService,
+        PasswordService,
         TwoFactorService,
         TwoFactorProviderService,
-        EmailVerificationService,
-        PasswordResetService,
         AUTHENTICATION_OPTIONS,
         USER_REPOSITORY,
       ],

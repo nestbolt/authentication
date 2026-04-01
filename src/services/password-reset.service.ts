@@ -20,13 +20,27 @@ import {
 export class PasswordResetService {
   constructor(
     @Inject(USER_REPOSITORY) private userRepository: UserRepository,
-    @Inject(PASSWORD_RESET_REPOSITORY) private resetRepository: PasswordResetRepository,
-    @Inject(RESETS_USER_PASSWORDS) private resetter: ResetsUserPasswords,
+    @Optional() @Inject(PASSWORD_RESET_REPOSITORY) private resetRepository: PasswordResetRepository,
+    @Optional() @Inject(RESETS_USER_PASSWORDS) private resetter: ResetsUserPasswords,
     @Inject(AUTHENTICATION_OPTIONS) private options: AuthenticationModuleOptions,
     @Optional() @Inject("EventEmitter2") private eventEmitter?: EventEmitterLike,
   ) {}
 
+  private ensureDependencies(): void {
+    if (!this.resetRepository) {
+      throw new Error(
+        `Missing provider: ${PASSWORD_RESET_REPOSITORY}. Register an implementation of PasswordResetRepository.`,
+      );
+    }
+    if (!this.resetter) {
+      throw new Error(
+        `Missing provider: ${RESETS_USER_PASSWORDS}. Register an implementation of ResetsUserPasswords.`,
+      );
+    }
+  }
+
   async sendResetLink(email: string): Promise<{ token: string }> {
+    this.ensureDependencies();
     const user = await this.userRepository.findByField(
       this.options.usernameField ?? "email",
       email,
@@ -43,7 +57,8 @@ export class PasswordResetService {
   }
 
   async reset(data: { email: string; token: string; password: string }): Promise<void> {
-    const record = await this.resetRepository.findByEmail(data.email);
+    this.ensureDependencies();
+    const record = await this.resetRepository!.findByEmail(data.email);
     if (!record) {
       throw new UnprocessableEntityException("Invalid password reset token.");
     }

@@ -10,6 +10,7 @@ import {
 } from "@nestjs/common";
 import { CurrentUser, RequiresFeature } from "../decorators";
 import { TwoFactorConfirmDto } from "../dto/two-factor-confirm.dto";
+import { FeatureEnabledGuard } from "../guards/feature-enabled.guard";
 import { JwtAuthGuard } from "../guards/jwt-auth.guard";
 import { PasswordConfirmedGuard } from "../guards/password-confirmed.guard";
 import { AuthUser, Feature } from "../interfaces";
@@ -17,7 +18,7 @@ import { TwoFactorService } from "../services/two-factor.service";
 
 @Controller("user")
 @RequiresFeature(Feature.TWO_FACTOR_AUTHENTICATION)
-@UseGuards(JwtAuthGuard)
+@UseGuards(FeatureEnabledGuard, JwtAuthGuard)
 export class TwoFactorController {
   constructor(private twoFactorService: TwoFactorService) {}
 

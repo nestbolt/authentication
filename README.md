@@ -100,7 +100,7 @@ import { MyUserRepository } from "./my-user.repository";
 export class AppModule {}
 ```
 
-3. **That's it!** All 17 auth routes are now available.
+3. **That's it!** All 19 auth routes are now available.
 
 ## Module Configuration
 
@@ -183,6 +183,7 @@ Same pattern - implement the interface for your ORM/driver.
 | Method | Route | Description | Auth |
 |--------|-------|-------------|------|
 | POST | /login | Authenticate user | No |
+| POST | /refresh | Refresh access token | Refresh Token |
 | POST | /logout | Log out | JWT |
 | POST | /register | Create new user | No |
 | POST | /forgot-password | Send reset link | No |
@@ -235,6 +236,8 @@ Available events: `auth.login`, `auth.logout`, `auth.registered`, `auth.lockout`
 | `usernameField` | `string` | `"email"` | Login username field |
 | `lowercaseUsernames` | `boolean` | `true` | Lowercase usernames on login |
 | `loginRateLimit` | `{ ttl, limit }` | `{ 60000, 5 }` | Login rate limiting |
+| `twoFactorRateLimit` | `{ ttl, limit }` | `{ 60000, 5 }` | Two-factor challenge rate limiting |
+| `verificationRateLimit` | `{ ttl, limit }` | `{ 60000, 6 }` | Email verification rate limiting |
 | `passwordTimeout` | `number` | `900` | Password confirmation timeout (seconds) |
 | `appName` | `string` | `"NestBolt"` | App name for TOTP QR codes |
 | `twoFactorOptions.confirm` | `boolean` | `false` | Require 2FA confirmation step |

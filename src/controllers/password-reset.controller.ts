@@ -1,12 +1,14 @@
-import { Body, Controller, HttpCode, HttpStatus, Post } from "@nestjs/common";
+import { Body, Controller, HttpCode, HttpStatus, Post, UseGuards } from "@nestjs/common";
 import { Public, RequiresFeature } from "../decorators";
 import { ForgotPasswordDto } from "../dto/forgot-password.dto";
 import { ResetPasswordDto } from "../dto/reset-password.dto";
+import { FeatureEnabledGuard } from "../guards/feature-enabled.guard";
 import { Feature } from "../interfaces";
 import { PasswordResetService } from "../services/password-reset.service";
 
 @Controller()
 @RequiresFeature(Feature.RESET_PASSWORDS)
+@UseGuards(FeatureEnabledGuard)
 export class PasswordResetController {
   constructor(private passwordResetService: PasswordResetService) {}
 

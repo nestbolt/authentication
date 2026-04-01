@@ -1,11 +1,13 @@
-import { Body, Controller, HttpCode, HttpStatus, Post } from "@nestjs/common";
+import { Body, Controller, HttpCode, HttpStatus, Post, UseGuards } from "@nestjs/common";
 import { Public, RequiresFeature } from "../decorators";
 import { RegisterDto } from "../dto/register.dto";
+import { FeatureEnabledGuard } from "../guards/feature-enabled.guard";
 import { Feature } from "../interfaces";
 import { RegistrationService } from "../services/registration.service";
 
 @Controller()
 @RequiresFeature(Feature.REGISTRATION)
+@UseGuards(FeatureEnabledGuard)
 export class RegistrationController {
   constructor(private registrationService: RegistrationService) {}
 

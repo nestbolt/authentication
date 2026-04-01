@@ -7,7 +7,7 @@ import { AuthService } from "./auth.service";
 @Injectable()
 export class RegistrationService {
   constructor(
-    @Inject(CREATES_NEW_USERS) private creator: CreatesNewUsers,
+    @Optional() @Inject(CREATES_NEW_USERS) private creator: CreatesNewUsers,
     private authService: AuthService,
     @Optional() @Inject("EventEmitter2") private eventEmitter?: EventEmitterLike,
   ) {}
@@ -15,6 +15,11 @@ export class RegistrationService {
   async register(
     data: Record<string, any>,
   ): Promise<{ user: AuthUser; accessToken: string; refreshToken: string }> {
+    if (!this.creator) {
+      throw new Error(
+        `Missing provider: ${CREATES_NEW_USERS}. Register an implementation of CreatesNewUsers.`,
+      );
+    }
     const user = await this.creator.create(data);
     this.eventEmitter?.emit?.(AUTH_EVENTS.REGISTERED, { user });
     const tokens = await this.authService.generateTokens(user);

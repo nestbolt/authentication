@@ -14,6 +14,7 @@ import {
 import { Public, RequiresFeature } from "../decorators";
 import { TwoFactorChallengeDto } from "../dto/two-factor-challenge.dto";
 import { AUTH_EVENTS } from "../events";
+import { FeatureEnabledGuard } from "../guards/feature-enabled.guard";
 import { TwoFactorThrottleGuard } from "../guards/two-factor-throttle.guard";
 import { EventEmitterLike, Feature } from "../interfaces";
 import { AuthService } from "../services/auth.service";
@@ -21,6 +22,7 @@ import { TwoFactorService } from "../services/two-factor.service";
 
 @Controller()
 @RequiresFeature(Feature.TWO_FACTOR_AUTHENTICATION)
+@UseGuards(FeatureEnabledGuard)
 export class TwoFactorChallengeController {
   constructor(
     private authService: AuthService,

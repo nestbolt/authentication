@@ -1,13 +1,14 @@
 import { Body, Controller, HttpCode, HttpStatus, Put, UseGuards } from "@nestjs/common";
 import { CurrentUser, RequiresFeature } from "../decorators";
 import { UpdateProfileDto } from "../dto/update-profile.dto";
+import { FeatureEnabledGuard } from "../guards/feature-enabled.guard";
 import { JwtAuthGuard } from "../guards/jwt-auth.guard";
 import { AuthUser, Feature } from "../interfaces";
 import { ProfileService } from "../services/profile.service";
 
 @Controller("user")
 @RequiresFeature(Feature.UPDATE_PROFILE_INFORMATION)
-@UseGuards(JwtAuthGuard)
+@UseGuards(FeatureEnabledGuard, JwtAuthGuard)
 export class ProfileController {
   constructor(private profileService: ProfileService) {}
 
