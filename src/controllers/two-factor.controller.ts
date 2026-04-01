@@ -25,8 +25,8 @@ export class TwoFactorController {
   @Post("two-factor-authentication")
   @UseGuards(PasswordConfirmedGuard)
   @HttpCode(HttpStatus.OK)
-  async enable(@CurrentUser() user: AuthUser, @Body() body: { force?: boolean }) {
-    await this.twoFactorService.enable(user, body.force ?? false);
+  async enable(@CurrentUser() user: AuthUser, @Body() body?: { force?: boolean }) {
+    await this.twoFactorService.enable(user, body?.force ?? false);
     return { message: "Two-factor authentication enabled." };
   }
 
